@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -39,3 +41,6 @@ plugins {
 
 include(":composeApp")
 include(":androidApp")
+if (Os.isFamily(Os.FAMILY_MAC)) {
+    include(":iosApp")
+}

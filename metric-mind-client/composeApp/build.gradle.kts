@@ -1,3 +1,4 @@
+import org.apache.tools.ant.taskdefs.condition.Os
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
@@ -6,6 +7,8 @@ plugins {
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.compose.hotReload)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 kotlin {
@@ -40,6 +43,11 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -48,6 +56,15 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
         }
+    }
+}
+
+dependencies {
+    androidRuntimeClasspath(libs.compose.uiTooling)
+    add("kspAndroid", libs.androidx.room.compiler)
+    if (Os.isFamily(Os.FAMILY_MAC)) {
+        add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+        add("kspIosArm64", libs.androidx.room.compiler)
     }
 }
 
@@ -61,4 +78,8 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
+}
+
+room {
+    schemaDirectory("dbSchemas")
 }
