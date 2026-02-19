@@ -21,7 +21,7 @@ class BuildPluginKmp : Plugin<Project> {
                     configureTargets(target)
                     sourceSets.configureEach {
                         languageSettings.apply {
-                            languageVersion = "1.9"
+                            languageVersion = "2.3"
                             progressiveMode = true
                             optIn("kotlin.time.ExperimentalTime")
                         }
@@ -42,8 +42,7 @@ class BuildPluginKmp : Plugin<Project> {
             }
         }
         linuxX64()
-        macosArm64()
-        macosX64()
+
         project.tasks.withType(JavaCompile::class.java) {
             sourceCompatibility = libs.versions.jvm.language.get()
             targetCompatibility = libs.versions.jvm.compiler.get()
