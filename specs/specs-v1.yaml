@@ -1,0 +1,614 @@
+openapi: 3.1.0
+info:
+  title: Metric Mind
+  contact:
+    email: sv.ugolkov@gmail.com
+  version: 0.0.1
+servers:
+  - url: http://0.0.0.0/api/v1
+tags:
+  - name: track
+    description: Отслеживаемое значение(трек)
+  - name: tracks
+    description: Список треков
+  - name: trackRecord
+    description: Запись из трека
+paths:
+  /track/create:
+    post:
+      tags:
+        - track
+      summary: Создание новоего трека для отслеживания.
+      operationId: createTrack
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrackCreateRq'
+        required: true
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackCreateRs'
+  /track/read:
+    post:
+      tags:
+        - track
+      summary: Обновление существующего трека.
+      operationId: readTrack
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrackReadRq'
+        required: true
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackReadRs'
+  /track/update:
+    post:
+      tags:
+        - track
+      summary: Обновление трека.
+      operationId: updateTrack
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrackUpdateRq'
+        required: true
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackUpdateRs'
+  /track/delete:
+    post:
+      tags:
+        - track
+      summary: Удаление трека.
+      operationId: deleteTrack
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrackDeleteRq'
+        required: true
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackDeleteRs'
+  /track/search:
+    post:
+      tags:
+        - track
+      summary: Поиск трека.
+      operationId: searchTrack
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrackSearchRq'
+        required: true
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackSearchRs'
+  
+  /tracks/read:
+    post:
+      tags:
+        - tracks
+      summary: Получение всех треков пользователя.
+      operationId: getTracks
+      parameters:
+        - in: header
+          name: Owner-ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TracksReadRs'
+
+  /trackRecord/create:
+    post:
+      tags:
+        - trackRecord
+      summary: Создание записи в треке.
+      operationId: createTrackRecord
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrackRecordCreateRq'
+        required: true
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackRecordCreateRs'
+  /trackRecord/read:
+    post:
+      tags:
+        - trackRecord
+      summary: Чтение записи из трека.
+      operationId: readTrackRecord
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrackRecordReadRq'
+        required: true
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackRecordReadRs'
+  /trackRecord/update:
+    post:
+      tags:
+        - trackRecord
+      summary: Обновление записи в треке.
+      operationId: updateTrackRecord
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrackRecordUpdateRq'
+        required: true
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackRecordUpdateRs'
+  /trackRecord/delete:
+    post:
+      tags:
+        - trackRecord
+      summary: Удаление записи из трека.
+      operationId: deleteTrackRecord
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrackRecordDeleteRq'
+        required: true
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackRecordDeleteRs'
+components:
+  schemas:
+    IRequest:
+      type: object
+      description: Базовый интерфейс для всех запросов
+      properties:
+        requestType:
+          type: string
+          description: Поле-дескриминатор для вычисления типа запроса
+          example: createTrack
+      discriminator:
+        propertyName: requestType
+        mapping:
+          createTrack: '#/components/schemas/TrackCreateRq'
+          readTrack: '#/components/schemas/TrackReadRq'
+          updateTrack: '#/components/schemas/TrackUpdateRq'
+          deleteTrack: '#/components/schemas/TrackDeleteRq'
+          searchTrack: '#/components/schemas/TrackSearchRq'
+          createTrackRecord: '#/components/schemas/TrackRecordCreateRq'
+          readTrackRecord: '#/components/schemas/TrackRecordReadRq'
+          updateTrackRecord: '#/components/schemas/TrackRecordUpdateRq'
+          deleteTrackRecord: '#/components/schemas/TrackRecordDeleteRq'
+
+    IResponse:
+      type: object
+      required:
+        - result
+      properties:
+        result:
+          $ref: "#/components/schemas/ResponseResult"
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResponseError'
+        responseType:
+          type: string
+          description: Поле-дескриминатор для вычисления типа запроса
+          example: createTrack
+      discriminator:
+        propertyName: responseType
+        mapping:
+          createTrack: '#/components/schemas/TrackCreateRs'
+          readTrack: '#/components/schemas/TrackReadRs'
+          updateTrack: '#/components/schemas/TrackUpdateRs'
+          deleteTrack: '#/components/schemas/TrackDeleteRs'
+          searchTrack: '#/components/schemas/TrackSearchRs'
+          readTracks: '#/components/schemas/TracksReadRs'
+          createTrackRecord: '#/components/schemas/TrackRecordCreateRs'
+          readTrackRecord: '#/components/schemas/TrackRecordReadRs'
+          updateTrackRecord: '#/components/schemas/TrackRecordUpdateRs'
+          deleteTrackRecord: '#/components/schemas/TrackRecordDeleteRs'
+    
+    ResponseResult:
+      type: string
+      enum:
+        - success
+        - error
+
+    ResponseError:
+      description: Ошибка
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        field:
+          type: string
+    
+    Id:
+      type: integer
+      format: int64
+      description: Идентификатор
+    
+    Title:
+      type: string
+      description: Название трека
+      example: Вес
+
+    Unit:
+      type: string
+      description: Единицы измерения трека
+      example: кг
+
+    Visibility:
+      type: string
+      description: Видимость трека
+      enum:
+        - private
+        - internal
+        - public
+      default: private
+
+    TrackType:
+      type: string
+      description: Тип трека
+      enum:
+        - int
+        - float
+        - inc
+        - duration
+    
+    Date:
+      type: integer
+      format: int64
+      example: 1771083737
+      description: Дата формате в timestamp
+
+    UserId:
+      type: string
+      description: Владелец трека
+
+    TrackWrite:
+      type: object
+      required:
+        - title
+        - type
+        - createDate
+        - visibility
+      properties:
+        title:
+          $ref: '#/components/schemas/Title'
+        type:
+          $ref: '#/components/schemas/TrackType'
+        createDate:
+          $ref: '#/components/schemas/Date'
+        unit:
+          $ref: '#/components/schemas/Unit'
+        visibility:
+          $ref: '#/components/schemas/Visibility'
+
+    TrackRead:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/TrackId'
+        - $ref: '#/components/schemas/TrackWrite'
+
+    TrackReadWithOwner:
+      type: object
+      required:
+        - owner
+      allOf:
+        - $ref: '#/components/schemas/TrackRead'
+        - type: string
+          properties:
+            owner:
+              $ref: '#/components/schemas/UserId'
+
+    TrackId:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+          description: Идентификатор трека
+
+    TrackRecord:
+      type: object
+      required:
+        - trackId
+        - value
+        - date
+      properties:
+        trackId:
+          $ref: '#/components/schemas/Id'
+        value:
+          type: number
+          format: Double
+          description: Значение
+          example: 45
+        date:
+          $ref: '#/components/schemas/Date'
+          description: Дата добавления значения в timestamp
+
+    # Request - Rq
+    # Response - Rs
+
+    TrackCreateRq:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/RequestDebug'
+        - type: object
+          required:
+            - track
+          properties:
+            track:
+              $ref: '#/components/schemas/TrackWrite'
+    
+    TrackCreateRs:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - type: object
+          properties:
+            track:
+              $ref: '#/components/schemas/TrackId'
+    
+    TrackReadRq:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/RequestDebug'
+        - type: object
+          required:
+            - track
+          properties:
+            track:
+              $ref: '#/components/schemas/TrackId'
+
+    TrackReadRs:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - type: object
+          properties:
+            track:
+              $ref: '#/components/schemas/TrackReadWithOwner'
+
+    TrackUpdateRq:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/RequestDebug'
+        - type: object
+          required:
+            - track
+          properties:
+            track:
+              type: object
+              required:
+                - id
+              properties:
+                id:
+                  $ref: '#/components/schemas/Id'
+                title:
+                  $ref: '#/components/schemas/Title'
+                unit:
+                  $ref: '#/components/schemas/Unit'
+                visibility:
+                  $ref: '#/components/schemas/Visibility'
+    
+    TrackUpdateRs:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+
+    TrackDeleteRq:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/RequestDebug'
+        - type: object
+          required:
+            - track
+          properties:
+            track:
+              $ref: '#/components/schemas/TrackId'
+    
+    TrackDeleteRs:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+
+    TrackSearchRq:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/RequestDebug'
+        - type: object
+          required:
+            - filter
+          properties:
+            filter:
+              type: object
+              required:
+                - searchTrack
+              properties:
+                searchTrack:
+                  $ref: '#/components/schemas/Title'
+                owner:
+                  $ref: '#/components/schemas/UserId'
+    
+    TrackSearchRs:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - type: object
+          properties:
+            tracks:
+              type: array
+              items:
+                $ref: '#/components/schemas/TrackReadWithOwner'
+
+    TracksReadRs:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - type: object
+          properties:
+            tracks:
+              type: array
+              items:
+                $ref: '#/components/schemas/TrackRead'
+
+    TrackRecordCreateRq:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/RequestDebug'
+        - type: object
+          required:
+            - trackRecord
+          properties:
+            trackRecord:
+              $ref: '#/components/schemas/TrackRecord'
+    
+    TrackRecordCreateRs:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+
+    TrackRecordReadRq:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/RequestDebug'
+        - type: object
+          required:
+            - track
+          properties:
+            track:
+              $ref: '#/components/schemas/TrackId'
+    
+    TrackRecordReadRs:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - type: object
+          properties:
+            trackRecords:
+              type: array
+              items:
+                $ref: '#/components/schemas/TrackRecord'
+
+    TrackRecordUpdateRq:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/RequestDebug'
+        - type: object
+          required:
+            - trackRecord
+          properties:
+            trackRecord:
+              $ref: '#/components/schemas/TrackRecord'
+    
+    TrackRecordUpdateRs:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+
+    TrackRecordDeleteRq:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/RequestDebug'
+        - type: object
+          required:
+            - trackRecord
+          properties:
+            trackRecord:
+              type: object
+              required:
+                - trackId
+                - date
+              properties:
+                trackId:
+                  $ref: '#/components/schemas/Id'
+                date:
+                  $ref: '#/components/schemas/Date'
+                  description: Дата добавления значения в timestamp
+    
+    TrackRecordDeleteRs:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+
+    # STUBS
+    RequestDebug:
+      type: object
+      properties:
+        debug:
+          $ref: '#/components/schemas/Debug'
+
+    Debug:
+      type: object
+      properties:
+        mode:
+          $ref: '#/components/schemas/Mode'
+        stub:
+          $ref: '#/components/schemas/Stubs'
+
+    Mode:
+      type: string
+      enum:
+        - real
+        - stub
+
+    Stubs:
+      type: string
+      description: Перечисления всех стабов
+      enum:
+        - success
+        - notFound
+        - badId
+        - badTitle
+        - badVisibility
+        - badSearchString
+        - dbError

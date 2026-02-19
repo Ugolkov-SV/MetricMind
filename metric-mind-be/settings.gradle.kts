@@ -6,6 +6,10 @@ pluginManagement {
     }
 }
 
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
@@ -20,8 +24,7 @@ dependencyResolutionManagement {
 rootProject.name = "metric-mind-be"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-}
-
-include("metric-mind-tmp")
+//include("metric-mind-tmp")
+include("metric-mind-common")
+include("metric-mind-api-v1")
+include("metric-mind-stubs")
