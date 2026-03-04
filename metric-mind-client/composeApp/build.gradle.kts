@@ -1,18 +1,20 @@
-import org.apache.tools.ant.taskdefs.condition.Os
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.multiplatform.library)
-    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.compose.hotReload)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.koin.compiler)
 }
 
 kotlin {
-    androidLibrary {
+    jvmToolchain(21)
+
+    android {
         namespace = "io.ugolkov.metric_mind.composeApp"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
 
@@ -22,12 +24,14 @@ kotlin {
     }
 
     listOf(
+        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            linkerOpts.add("-lsqlite3")
         }
     }
 
@@ -43,29 +47,40 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.kotlinx.datetime)
 
-            implementation(project.dependencies.platform(libs.koin.bom))
-            implementation(libs.koin.core)
+            api(project.dependencies.platform(libs.koin.bom))
+            api(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
         }
+        androidMain.dependencies {
+            implementation(libs.koin.android)
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
+    }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xexplicit-backing-fields")
     }
 }
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+
     add("kspAndroid", libs.androidx.room.compiler)
-    if (Os.isFamily(Os.FAMILY_MAC)) {
-        add("kspIosSimulatorArm64", libs.androidx.room.compiler)
-        add("kspIosArm64", libs.androidx.room.compiler)
-    }
+    add("kspIosX64", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+    add("kspJvm", libs.androidx.room.compiler)
 }
 
 compose.desktop {
@@ -81,5 +96,12 @@ compose.desktop {
 }
 
 room {
-    schemaDirectory("dbSchemas")
+    schemaDirectory("schemas")
+}
+
+composeCompiler {
+    val config = rootProject.layout.projectDirectory
+        .dir("configs")
+        .file("stability_config.conf")
+    stabilityConfigurationFiles.add(config)
 }

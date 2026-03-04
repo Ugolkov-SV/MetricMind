@@ -5,11 +5,14 @@ import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.the
+import org.jetbrains.kotlin.buildtools.api.ExperimentalBuildToolsApi
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 @Suppress("unused")
 class BuildPluginKmp : Plugin<Project> {
+    @OptIn(ExperimentalBuildToolsApi::class, ExperimentalKotlinGradlePluginApi::class)
     override fun apply(target: Project) =
         with(target) {
             pluginManager.apply("org.jetbrains.kotlin.multiplatform")
@@ -18,10 +21,14 @@ class BuildPluginKmp : Plugin<Project> {
 
             plugins.withId("org.jetbrains.kotlin.multiplatform") {
                 extensions.configure<KotlinMultiplatformExtension> {
-                    configureTargets(target)
+                    jvm()
+                    linuxX64()
+
                     sourceSets.configureEach {
                         languageSettings.apply {
+                            compilerVersion.set("2.3.10")
                             languageVersion = "2.3"
+                            apiVersion = "2.3"
                             progressiveMode = true
                             optIn("kotlin.time.ExperimentalTime")
                         }
@@ -29,23 +36,4 @@ class BuildPluginKmp : Plugin<Project> {
                 }
             }
         }
-
-    private fun KotlinMultiplatformExtension.configureTargets(project: Project) {
-        val libs = project.the<LibrariesForLibs>()
-        jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of(libs.versions.jvm.language.get()))
-        }
-
-        jvm {
-            compilerOptions {
-                jvmTarget.set(JvmTarget.valueOf("JVM_${libs.versions.jvm.compiler.get()}"))
-            }
-        }
-        linuxX64()
-
-        project.tasks.withType(JavaCompile::class.java) {
-            sourceCompatibility = libs.versions.jvm.language.get()
-            targetCompatibility = libs.versions.jvm.compiler.get()
-        }
-    }
 }
