@@ -14,7 +14,7 @@ class RequestV2SerializationTest {
         ),
         track = TrackWrite(
             title = "track title",
-            type = TrackType.INT,
+            type = TrackType.NUMBER,
             unit = "unit",
             visibility = Visibility.PRIVATE,
             createDate = 0,

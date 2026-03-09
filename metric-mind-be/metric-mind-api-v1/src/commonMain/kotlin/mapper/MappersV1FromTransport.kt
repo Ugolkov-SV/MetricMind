@@ -111,8 +111,7 @@ private fun TrackSearchRqAllOfFilter.toInternal(): MmTrackFilter =
 
 private fun TrackType?.toInternal(): MmTrackType =
     when (this) {
-        TrackType.INT -> MmTrackType.INT
-        TrackType.FLOAT -> MmTrackType.FLOAT
+        TrackType.NUMBER -> MmTrackType.NUMBER
         TrackType.INC -> MmTrackType.INC
         TrackType.DURATION -> MmTrackType.DURATION
         null -> MmTrackType.NONE

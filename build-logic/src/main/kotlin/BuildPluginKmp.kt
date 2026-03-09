@@ -2,10 +2,8 @@ import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.compile.JavaCompile
-import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.the
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 @Suppress("unused")
@@ -31,18 +29,9 @@ class BuildPluginKmp : Plugin<Project> {
         }
 
     private fun KotlinMultiplatformExtension.configureTargets(project: Project) {
+        jvm()
+
         val libs = project.the<LibrariesForLibs>()
-        jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of(libs.versions.jvm.language.get()))
-        }
-
-        jvm {
-            compilerOptions {
-                jvmTarget.set(JvmTarget.valueOf("JVM_${libs.versions.jvm.compiler.get()}"))
-            }
-        }
-        linuxX64()
-
         project.tasks.withType(JavaCompile::class.java) {
             sourceCompatibility = libs.versions.jvm.language.get()
             targetCompatibility = libs.versions.jvm.compiler.get()

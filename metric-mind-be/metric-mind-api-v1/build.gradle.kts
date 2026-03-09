@@ -41,7 +41,7 @@ openApiGenerate {
 kotlin {
     sourceSets {
         commonMain {
-            kotlin.srcDir(layout.buildDirectory.dir("generate-resources/main/src"))
+            kotlin.srcDir(layout.buildDirectory.dir("generate-resources/main/src/main/kotlin"))
             dependencies {
                 implementation(projects.metricMindCommon)
 
@@ -64,11 +64,8 @@ kotlin {
     }
 }
 
-tasks {
-    filter { task ->
-        task.name.startsWith("compile")
+tasks
+    .filter { task -> task.name.startsWith("compile") }
+    .forEach { task ->
+        task.dependsOn(tasks.openApiGenerate)
     }
-        .forEach { task ->
-            task.dependsOn(openApiGenerate)
-        }
-}

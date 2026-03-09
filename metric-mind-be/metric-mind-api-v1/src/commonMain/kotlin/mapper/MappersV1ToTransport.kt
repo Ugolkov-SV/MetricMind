@@ -109,11 +109,10 @@ internal fun MmTrackId.toTransport(): TrackId =
 
 internal fun MmTrackType.toTransport(): TrackType =
     when (this) {
-        MmTrackType.INT -> TrackType.INT
-        MmTrackType.FLOAT -> TrackType.FLOAT
+        MmTrackType.NUMBER -> TrackType.NUMBER
         MmTrackType.INC -> TrackType.INC
         MmTrackType.DURATION -> TrackType.DURATION
-        MmTrackType.NONE -> TrackType.INT
+        MmTrackType.NONE -> TrackType.NUMBER
     }
 
 internal fun MmVisibility.toTransport(): Visibility =

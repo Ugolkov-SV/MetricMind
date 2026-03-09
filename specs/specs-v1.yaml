@@ -307,8 +307,7 @@ components:
       type: string
       description: Тип трека
       enum:
-        - int
-        - float
+        - number
         - inc
         - duration
     

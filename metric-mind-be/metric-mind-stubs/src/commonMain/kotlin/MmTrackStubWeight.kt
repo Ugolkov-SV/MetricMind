@@ -7,7 +7,7 @@ object MmTrackStubWeight {
         get() = MmTrack(
             id = MmTrackId(123),
             title = "Вес",
-            type = MmTrackType.FLOAT,
+            type = MmTrackType.NUMBER,
             createDate = 0,
             unit = "кг",
             owner = MmUserId("user-1"),
