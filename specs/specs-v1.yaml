@@ -37,7 +37,7 @@ paths:
     post:
       tags:
         - track
-      summary: Обновление существующего трека.
+      summary: Чтение существующего трека.
       operationId: readTrack
       requestBody:
         content:

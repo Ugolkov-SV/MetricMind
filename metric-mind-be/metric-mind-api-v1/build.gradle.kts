@@ -7,12 +7,11 @@ plugins {
 openApiGenerate {
     generatorName.set("kotlin")
     val version = "v1"
-    val openapiGroup = "${rootProject.group}.api.$version"
+    val openapiGroup = "${group}.api.$version"
     packageName.set(openapiGroup)
     modelPackage.set("$openapiGroup.models")
-    val specsDir = rootProject.layout.projectDirectory.dir("../specs")
-    val specsFile = specsDir.file("specs-$version.yaml")
-    inputSpec.set(specsFile.toString())
+    val specsFile = rootProject.ext["spec-${version}"] as String
+    inputSpec.set(specsFile)
 
     /**
      * Здесь указываем, что нам нужны только модели, все остальное не нужно
