@@ -11,7 +11,7 @@ fun MmContext.toTransport(): IResponse =
         MmCommand.READ if !trackRequest.isEmpty() -> toTransportTrackRead()
         MmCommand.UPDATE if !trackRequest.isEmpty() -> toTransportTrackUpdate()
         MmCommand.DELETE if !trackRequest.isEmpty() -> toTransportTrackDelete()
-        MmCommand.SEARCH if !trackRequest.isEmpty() -> toTransportTrackSearch()
+        MmCommand.SEARCH if !trackFilterRequest.isEmpty() -> toTransportTrackSearch()
         MmCommand.CREATE if !trackRecordRequest.isEmpty() -> toTransportTrackRecordCreate()
         MmCommand.READ if !trackRecordRequest.isEmpty() -> toTransportTrackRecordRead()
         MmCommand.UPDATE if !trackRecordRequest.isEmpty() -> toTransportTrackRecordUpdate()
@@ -19,59 +19,60 @@ fun MmContext.toTransport(): IResponse =
         else -> throw NotValidCommand(cmd)
     }
 
-private fun MmContext.toTransportTrackCreate(): IResponse =
+fun MmContext.toTransportTrackCreate(): TrackCreateRs =
     TrackCreateRs(
         result = state.toResult(),
         errors = errors.toTransportErrors(),
         track = trackResponse.firstOrNull()?.id?.toTransport(),
     )
 
-private fun MmContext.toTransportTrackRead(): IResponse =
+fun MmContext.toTransportTrackRead(): TrackReadRs =
     TrackReadRs(
         result = state.toResult(),
         errors = errors.toTransportErrors(),
         track = trackResponse.firstOrNull()?.toTransport()
     )
 
-private fun MmContext.toTransportTrackUpdate(): IResponse =
+fun MmContext.toTransportTrackUpdate(): TrackUpdateRs =
     TrackUpdateRs(
         result = state.toResult(),
         errors = errors.toTransportErrors(),
     )
 
-private fun MmContext.toTransportTrackDelete(): IResponse =
+fun MmContext.toTransportTrackDelete(): TrackDeleteRs =
     TrackDeleteRs(
         result = state.toResult(),
         errors = errors.toTransportErrors(),
+        track = trackResponse.firstOrNull()?.id?.toTransport(),
     )
 
-private fun MmContext.toTransportTrackSearch(): IResponse =
+fun MmContext.toTransportTrackSearch(): TrackSearchRs =
     TrackSearchRs(
         result = state.toResult(),
         errors = errors.toTransportErrors(),
         tracks = trackResponse.toTransportTrack(),
     )
 
-private fun MmContext.toTransportTrackRecordCreate(): IResponse =
+fun MmContext.toTransportTrackRecordCreate(): TrackRecordCreateRs =
     TrackRecordCreateRs(
         result = state.toResult(),
         errors = errors.toTransportErrors(),
     )
 
-private fun MmContext.toTransportTrackRecordRead(): IResponse =
+fun MmContext.toTransportTrackRecordRead(): TrackRecordReadRs =
     TrackRecordReadRs(
         result = state.toResult(),
         errors = errors.toTransportErrors(),
         trackRecords = trackRecordResponse.toTransportTrackRecord(),
     )
 
-private fun MmContext.toTransportTrackRecordUpdate(): IResponse =
+fun MmContext.toTransportTrackRecordUpdate(): TrackRecordUpdateRs =
     TrackRecordUpdateRs(
         result = state.toResult(),
         errors = errors.toTransportErrors(),
     )
 
-private fun MmContext.toTransportTrackRecordDelete(): IResponse =
+fun MmContext.toTransportTrackRecordDelete(): TrackRecordDeleteRs =
     TrackRecordDeleteRs(
         result = state.toResult(),
         errors = errors.toTransportErrors(),
@@ -98,6 +99,7 @@ private fun List<MmTrackRecord>.toTransportTrackRecord(): List<TrackRecord>? =
 
 internal fun MmTrackRecord.toTransport(): TrackRecord =
     TrackRecord(
+        trackRecordId = this.trackRecordId.asLong(),
         trackId = this.trackId.asLong(),
         value = this.value,
         date = this.date,
@@ -128,7 +130,7 @@ private fun List<MmError>.toTransportErrors(): List<ResponseError>? =
         .toList()
         .takeIf { it.isNotEmpty() }
 
-private fun MmError.toTransportError() =
+private fun MmError.toTransportError(): ResponseError =
     ResponseError(
         code = code.takeIf { it.isNotBlank() } ?: "Unknown code",
         message = message.takeIf { it.isNotBlank() } ?: "Unknown error",

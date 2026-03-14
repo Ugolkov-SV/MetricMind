@@ -26,7 +26,8 @@ dependencies {
 
     // tests
     testImplementation(kotlin("test-junit5"))
-    testImplementation(libs.spring.test)
+    testImplementation(libs.spring.starter.test)
+    testImplementation(libs.spring.webflux.test)
     testImplementation(libs.mockito.kotlin)
 }
 

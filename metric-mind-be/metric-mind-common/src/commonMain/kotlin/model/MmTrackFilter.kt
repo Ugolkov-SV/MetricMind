@@ -4,6 +4,9 @@ data class MmTrackFilter(
     var searchString: String = "",
     var ownerId: MmUserId = MmUserId.NONE,
 ) {
+    fun isEmpty(): Boolean =
+        this == NONE
+
     companion object {
         val NONE = MmTrackFilter()
     }
