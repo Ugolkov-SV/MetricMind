@@ -5,8 +5,8 @@ import io.ugolkov.metric_mind.api.v1.mappers.toTransportTrackRecordCreate
 import io.ugolkov.metric_mind.api.v1.mappers.toTransportTrackRecordDelete
 import io.ugolkov.metric_mind.api.v1.mappers.toTransportTrackRecordRead
 import io.ugolkov.metric_mind.api.v1.mappers.toTransportTrackRecordUpdate
+import io.ugolkov.metric_mind.common.IProcessor
 import io.ugolkov.metric_mind.common.MmContext
-import io.ugolkov.metric_mind.spring.common.MmTrackRecordProcessor
 import io.ugolkov.metric_mind.spring.config.MetricMindConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,7 +25,7 @@ class TrackRecordControllerV1Test {
 
     @Suppress("unused")
     @MockitoBean
-    private lateinit var processor: MmTrackRecordProcessor
+    private lateinit var processor: IProcessor
 
     @Test
     fun createTrackRecord() =

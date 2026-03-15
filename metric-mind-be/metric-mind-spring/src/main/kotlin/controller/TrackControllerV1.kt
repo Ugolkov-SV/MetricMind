@@ -3,7 +3,7 @@ package io.ugolkov.metric_mind.spring.controller
 import io.ugolkov.api.v1.models.*
 import io.ugolkov.metric_mind.api.v1.mappers.fromTransport
 import io.ugolkov.metric_mind.api.v1.mappers.toTransport
-import io.ugolkov.metric_mind.spring.common.controllerTrackHelper
+import io.ugolkov.metric_mind.biz.helper.controllerHelper
 import io.ugolkov.metric_mind.spring.config.MmAppSettings
 import org.springframework.web.bind.annotation.*
 import kotlin.reflect.KClass
@@ -39,7 +39,7 @@ class TrackControllerV1(private val appSettings: MmAppSettings) {
             clazz: KClass<*>,
             logId: String,
         ): R =
-            appSettings.controllerTrackHelper(
+            appSettings.controllerHelper(
                 getRequest = { fromTransport(request) },
                 toResponse = { toTransport() as R },
                 clazz = clazz,

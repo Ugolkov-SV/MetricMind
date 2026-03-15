@@ -1,4 +1,4 @@
-package io.ugolkov.metric_mind.spring.helper
+package io.ugolkov.metric_mind.biz.helper
 
 import io.ugolkov.metric_mind.common.model.MmError
 

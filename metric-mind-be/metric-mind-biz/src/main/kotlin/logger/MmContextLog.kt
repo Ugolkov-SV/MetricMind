@@ -1,4 +1,4 @@
-package io.ugolkov.metric_mind.spring.logger
+package io.ugolkov.metric_mind.biz.logger
 
 import io.ugolkov.metric_mind.common.MmContext
 import io.ugolkov.metric_mind.common.model.*
@@ -12,7 +12,7 @@ fun MmContext.toLog(logId: String) =
     CommonLogModel(
         messageTime = Clock.System.now().toString(),
         logId = logId,
-        source = "ok-marketplace",
+        source = "metric-mind",
         track = toMmLog(),
         trackRecord = toMmLog(),
         errors = errors.map { it.toLog() },

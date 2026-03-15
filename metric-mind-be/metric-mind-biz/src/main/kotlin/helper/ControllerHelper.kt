@@ -1,43 +1,13 @@
-package io.ugolkov.metric_mind.spring.common
+package io.ugolkov.metric_mind.biz.helper
 
+import io.ugolkov.metric_mind.biz.logger.toLog
+import io.ugolkov.metric_mind.common.IMmAppSettings
 import io.ugolkov.metric_mind.common.MmContext
 import io.ugolkov.metric_mind.common.model.MmState
-import io.ugolkov.metric_mind.spring.config.MmAppSettings
-import io.ugolkov.metric_mind.spring.helper.asMmError
-import io.ugolkov.metric_mind.spring.logger.toLog
 import kotlin.reflect.KClass
 import kotlin.time.Clock
 
-suspend inline fun <T> MmAppSettings.controllerTrackHelper(
-    crossinline getRequest: suspend MmContext.() -> Unit,
-    crossinline toResponse: suspend MmContext.() -> T,
-    clazz: KClass<*>,
-    logId: String,
-): T =
-    controllerHelper(
-        processor = trackProcessor,
-        getRequest = getRequest,
-        toResponse = toResponse,
-        clazz = clazz,
-        logId = logId,
-    )
-
-suspend inline fun <T> MmAppSettings.controllerTrackRecordHelper(
-    crossinline getRequest: suspend MmContext.() -> Unit,
-    crossinline toResponse: suspend MmContext.() -> T,
-    clazz: KClass<*>,
-    logId: String,
-): T =
-    controllerHelper(
-        processor = trackRecordProcessor,
-        getRequest = getRequest,
-        toResponse = toResponse,
-        clazz = clazz,
-        logId = logId,
-    )
-
-suspend inline fun <T> MmAppSettings.controllerHelper(
-    processor: MmProcessor,
+suspend inline fun <T> IMmAppSettings.controllerHelper(
     crossinline getRequest: suspend MmContext.() -> Unit,
     crossinline toResponse: suspend MmContext.() -> T,
     clazz: KClass<*>,

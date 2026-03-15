@@ -1,11 +1,9 @@
-package ru.otus.otuskotlin.marketplace.api.v2.mappers
-
 import io.ugolkov.api.v1.models.*
 import io.ugolkov.metric_mind.api.v1.mappers.fromTransport
 import io.ugolkov.metric_mind.api.v1.mappers.toTransport
 import io.ugolkov.metric_mind.common.MmContext
 import io.ugolkov.metric_mind.common.model.*
-import ru.otus.otuskotlin.marketplace.stubs.MmTrackStub
+import io.ugolkov.metric_mind.ru.stubs.MmTrackStub
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

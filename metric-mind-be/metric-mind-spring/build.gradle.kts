@@ -17,11 +17,12 @@ dependencies {
     implementation(libs.coroutines.reactor)
     implementation(libs.coroutines.reactive)
     implementation(libs.kotlinx.serialization.core)
-    implementation(libs.kotlinx.datetime)
+    implementation(libs.logback)
 
     implementation(projects.metricMindCommon)
+    implementation(projects.metricMindBiz)
     implementation(projects.metricMindApiV1)
-    implementation(projects.metricMindStubs)
+    implementation(projects.metricMindApiV1Mapper)
     implementation(projects.metricMindLogger)
 
     // tests

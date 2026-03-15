@@ -1,41 +1,37 @@
-package ru.otus.otuskotlin.marketplace.api.v2.mappers
-
 import io.ugolkov.api.v1.models.*
 import io.ugolkov.metric_mind.api.v1.mappers.fromTransport
 import io.ugolkov.metric_mind.api.v1.mappers.toTransport
 import io.ugolkov.metric_mind.common.MmContext
 import io.ugolkov.metric_mind.common.model.*
-import ru.otus.otuskotlin.marketplace.stubs.MmTrackRecordStub
+import io.ugolkov.metric_mind.ru.stubs.MmTrackRecordStub
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class MapperDeleteTrackRecordTest {
+class MapperUpdateTrackRecordTest {
     @Test
     fun fromTransport() {
         val trackRecord = MmTrackRecordStub.get()
-        val request = TrackRecordDeleteRq(
+        val request = TrackRecordUpdateRq(
             debug = Debug(
                 mode = Mode.STUB,
                 stub = Stubs.SUCCESS,
             ),
             trackRecord = trackRecord.toTransport(),
         )
-
         val context = MmContext()
         context.fromTransport(request)
 
         assertEquals(MmStubs.SUCCESS, context.stubCase)
         assertEquals(MmWorkMode.STUB, context.workMode)
-        assertEquals(trackRecord.trackId, context.trackRecordRequest.trackId)
+        assertEquals(trackRecord, context.trackRecordRequest)
     }
 
     @Test
     fun toTransport() {
         val context = MmContext(
             requestId = MmRequestId("1234"),
-            command = MmCommand.DELETE,
+            command = MmCommand.UPDATE,
             trackRecordRequest = MmTrackRecordStub.get(),
-            trackRecordResponse = mutableListOf(MmTrackRecordStub.get()),
             errors = mutableListOf(
                 MmError(
                     code = "err",
@@ -46,17 +42,11 @@ class MapperDeleteTrackRecordTest {
             state = MmState.RUNNING,
         )
 
-        val response = context.toTransport() as TrackRecordDeleteRs
+        val response = context.toTransport() as TrackRecordUpdateRs
 
         assertEquals(1, response.errors?.size)
         assertEquals("err", response.errors?.firstOrNull()?.code)
         assertEquals("title", response.errors?.firstOrNull()?.field)
         assertEquals("wrong title", response.errors?.firstOrNull()?.message)
     }
-
-    private fun MmTrackRecord.toTransport(): TrackRecordDeleteRqAllOfTrackRecord =
-        TrackRecordDeleteRqAllOfTrackRecord(
-            trackId = this.trackId.asLong(),
-            date = this.date,
-        )
 }

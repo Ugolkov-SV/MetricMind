@@ -2,8 +2,8 @@ package io.ugolkov.metric_mind.spring.controller
 
 import io.ugolkov.api.v1.models.*
 import io.ugolkov.metric_mind.api.v1.mappers.*
+import io.ugolkov.metric_mind.common.IProcessor
 import io.ugolkov.metric_mind.common.MmContext
-import io.ugolkov.metric_mind.spring.common.MmTrackProcessor
 import io.ugolkov.metric_mind.spring.config.MetricMindConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,7 +22,7 @@ class TrackControllerV1Test {
 
     @Suppress("unused")
     @MockitoBean
-    private lateinit var processor: MmTrackProcessor
+    private lateinit var processor: IProcessor
 
     @Test
     fun createTrack() =

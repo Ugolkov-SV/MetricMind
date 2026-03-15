@@ -1,19 +1,17 @@
-package ru.otus.otuskotlin.marketplace.api.v2.mappers
-
 import io.ugolkov.api.v1.models.*
 import io.ugolkov.metric_mind.api.v1.mappers.fromTransport
 import io.ugolkov.metric_mind.api.v1.mappers.toTransport
 import io.ugolkov.metric_mind.common.MmContext
 import io.ugolkov.metric_mind.common.model.*
-import ru.otus.otuskotlin.marketplace.stubs.MmTrackRecordStub
+import io.ugolkov.metric_mind.ru.stubs.MmTrackRecordStub
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class MapperCreateTrackRecordTest {
+class MapperDeleteTrackRecordTest {
     @Test
     fun fromTransport() {
         val trackRecord = MmTrackRecordStub.get()
-        val request = TrackRecordCreateRq(
+        val request = TrackRecordDeleteRq(
             debug = Debug(
                 mode = Mode.STUB,
                 stub = Stubs.SUCCESS,
@@ -26,14 +24,14 @@ class MapperCreateTrackRecordTest {
 
         assertEquals(MmStubs.SUCCESS, context.stubCase)
         assertEquals(MmWorkMode.STUB, context.workMode)
-        assertEquals(trackRecord, context.trackRecordRequest)
+        assertEquals(trackRecord.trackId, context.trackRecordRequest.trackId)
     }
 
     @Test
     fun toTransport() {
         val context = MmContext(
             requestId = MmRequestId("1234"),
-            command = MmCommand.CREATE,
+            command = MmCommand.DELETE,
             trackRecordRequest = MmTrackRecordStub.get(),
             trackRecordResponse = mutableListOf(MmTrackRecordStub.get()),
             errors = mutableListOf(
@@ -46,11 +44,17 @@ class MapperCreateTrackRecordTest {
             state = MmState.RUNNING,
         )
 
-        val response = context.toTransport() as TrackRecordCreateRs
+        val response = context.toTransport() as TrackRecordDeleteRs
 
         assertEquals(1, response.errors?.size)
         assertEquals("err", response.errors?.firstOrNull()?.code)
         assertEquals("title", response.errors?.firstOrNull()?.field)
         assertEquals("wrong title", response.errors?.firstOrNull()?.message)
     }
+
+    private fun MmTrackRecord.toTransport(): TrackRecordDeleteRqAllOfTrackRecord =
+        TrackRecordDeleteRqAllOfTrackRecord(
+            trackId = this.trackId.asLong(),
+            date = this.date,
+        )
 }

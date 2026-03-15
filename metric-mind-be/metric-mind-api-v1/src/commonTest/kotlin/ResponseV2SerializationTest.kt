@@ -1,10 +1,9 @@
-package ru.otus.otuskotlin.marketplace.api.v2
+package io.ugolkov.metric_mind.api.v1
 
 import io.ugolkov.api.v1.models.IResponse
 import io.ugolkov.api.v1.models.ResponseResult
 import io.ugolkov.api.v1.models.TrackCreateRs
 import io.ugolkov.api.v1.models.TrackId
-import io.ugolkov.metric_mind.api.v1.apiV1Mapper
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals

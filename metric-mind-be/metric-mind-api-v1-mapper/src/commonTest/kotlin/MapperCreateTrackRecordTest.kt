@@ -1,24 +1,22 @@
-package ru.otus.otuskotlin.marketplace.api.v2.mappers
-
 import io.ugolkov.api.v1.models.*
 import io.ugolkov.metric_mind.api.v1.mappers.fromTransport
 import io.ugolkov.metric_mind.api.v1.mappers.toTransport
 import io.ugolkov.metric_mind.common.MmContext
 import io.ugolkov.metric_mind.common.model.*
-import ru.otus.otuskotlin.marketplace.stubs.MmTrackStub
+import io.ugolkov.metric_mind.ru.stubs.MmTrackRecordStub
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class MapperReadTrackTest {
+class MapperCreateTrackRecordTest {
     @Test
     fun fromTransport() {
-        val track = MmTrackStub.get()
-        val request = TrackReadRq(
+        val trackRecord = MmTrackRecordStub.get()
+        val request = TrackRecordCreateRq(
             debug = Debug(
                 mode = Mode.STUB,
                 stub = Stubs.SUCCESS,
             ),
-            track = track.id.toTransport(),
+            trackRecord = trackRecord.toTransport(),
         )
 
         val context = MmContext()
@@ -26,16 +24,16 @@ class MapperReadTrackTest {
 
         assertEquals(MmStubs.SUCCESS, context.stubCase)
         assertEquals(MmWorkMode.STUB, context.workMode)
-        assertEquals(track.id, context.trackRequest.id)
+        assertEquals(trackRecord, context.trackRecordRequest)
     }
 
     @Test
     fun toTransport() {
         val context = MmContext(
             requestId = MmRequestId("1234"),
-            command = MmCommand.READ,
-            trackRequest = MmTrackStub.get(),
-            trackResponse = mutableListOf(MmTrackStub.get()),
+            command = MmCommand.CREATE,
+            trackRecordRequest = MmTrackRecordStub.get(),
+            trackRecordResponse = mutableListOf(MmTrackRecordStub.get()),
             errors = mutableListOf(
                 MmError(
                     code = "err",
@@ -46,23 +44,11 @@ class MapperReadTrackTest {
             state = MmState.RUNNING,
         )
 
-        val response = context.toTransport() as TrackReadRs
+        val response = context.toTransport() as TrackRecordCreateRs
 
-        assertEquals(MmTrackStub.get().toTransport(), response.track)
         assertEquals(1, response.errors?.size)
         assertEquals("err", response.errors?.firstOrNull()?.code)
         assertEquals("title", response.errors?.firstOrNull()?.field)
         assertEquals("wrong title", response.errors?.firstOrNull()?.message)
     }
-
-    private fun MmTrack.toTransport(): TrackReadWithOwner =
-        TrackReadWithOwner(
-            id = this.id.asLong(),
-            title = this.title,
-            type = this.type.toTransport(),
-            createDate = this.createDate,
-            visibility = this.visibility.toTransport(),
-            unit = this.unit,
-            owner = this.owner.asString(),
-        )
 }
