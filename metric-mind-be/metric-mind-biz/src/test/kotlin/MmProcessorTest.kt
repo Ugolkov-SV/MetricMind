@@ -2,8 +2,8 @@ import io.ugolkov.metric_mind.biz.MmProcessor
 import io.ugolkov.metric_mind.common.MmContext
 import io.ugolkov.metric_mind.common.MmCorSettings
 import io.ugolkov.metric_mind.common.model.*
-import io.ugolkov.metric_mind.ru.stubs.MmTrackRecordStub
-import io.ugolkov.metric_mind.ru.stubs.MmTrackStub
+import io.ugolkov.metric_mind.stubs.MmTrackRecordStub
+import io.ugolkov.metric_mind.stubs.MmTrackStub
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

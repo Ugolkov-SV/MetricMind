@@ -1,7 +1,7 @@
-package io.ugolkov.metric_mind.ru.stubs
+package io.ugolkov.metric_mind.stubs
 
 import io.ugolkov.metric_mind.common.model.MmTrack
-import io.ugolkov.metric_mind.ru.stubs.MmTrackStubWeight.WEIGHT_1
+import io.ugolkov.metric_mind.stubs.MmTrackStubWeight.WEIGHT_1
 
 object MmTrackStub {
     fun get(): MmTrack = WEIGHT_1.copy()

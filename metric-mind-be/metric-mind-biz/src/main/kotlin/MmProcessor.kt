@@ -4,8 +4,8 @@ import io.ugolkov.metric_mind.common.IProcessor
 import io.ugolkov.metric_mind.common.MmContext
 import io.ugolkov.metric_mind.common.MmCorSettings
 import io.ugolkov.metric_mind.common.model.MmState
-import io.ugolkov.metric_mind.ru.stubs.MmTrackRecordStub
-import io.ugolkov.metric_mind.ru.stubs.MmTrackStub
+import io.ugolkov.metric_mind.stubs.MmTrackRecordStub
+import io.ugolkov.metric_mind.stubs.MmTrackStub
 
 @Suppress("unused")
 class MmProcessor(val corSettings: MmCorSettings) : IProcessor {

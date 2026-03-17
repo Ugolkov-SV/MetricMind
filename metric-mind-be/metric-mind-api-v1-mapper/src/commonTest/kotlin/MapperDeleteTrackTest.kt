@@ -3,7 +3,7 @@ import io.ugolkov.metric_mind.api.v1.mappers.fromTransport
 import io.ugolkov.metric_mind.api.v1.mappers.toTransport
 import io.ugolkov.metric_mind.common.MmContext
 import io.ugolkov.metric_mind.common.model.*
-import io.ugolkov.metric_mind.ru.stubs.MmTrackStub
+import io.ugolkov.metric_mind.stubs.MmTrackStub
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
