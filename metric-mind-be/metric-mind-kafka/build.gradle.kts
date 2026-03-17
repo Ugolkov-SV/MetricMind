@@ -22,3 +22,14 @@ dependencies {
 
     testImplementation(kotlin("test-junit"))
 }
+
+tasks {
+    register("build-image", Exec::class) {
+        group = "docker"
+        dependsOn(("shadowJar"))
+
+        workingDir = file(".")
+        executable("sh")
+        args("-c", "docker build -t metric-mind-kafka:v1 .")
+    }
+}
