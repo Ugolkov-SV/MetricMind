@@ -1,4 +1,4 @@
-package ru.otus.otuskotlin.marketplace.stubs
+package io.ugolkov.metric_mind.stubs
 
 import io.ugolkov.metric_mind.common.model.MmTrackId
 import io.ugolkov.metric_mind.common.model.MmTrackRecord

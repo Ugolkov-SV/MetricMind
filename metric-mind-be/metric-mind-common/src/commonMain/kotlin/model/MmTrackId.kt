@@ -1,10 +1,10 @@
 package io.ugolkov.metric_mind.common.model
 
-import kotlin.jvm.JvmInline
-
 @JvmInline
 value class MmTrackId(private val id: Long) {
     fun asLong(): Long = id
+
+    fun asString(): String = id.toString()
 
     companion object {
         val NONE = MmTrackId(-1L)

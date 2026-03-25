@@ -7,12 +7,11 @@ plugins {
 openApiGenerate {
     generatorName.set("kotlin")
     val version = "v1"
-    val openapiGroup = "${rootProject.group}.api.$version"
+    val openapiGroup = "${group}.api.$version"
     packageName.set(openapiGroup)
     modelPackage.set("$openapiGroup.models")
-    val specsDir = rootProject.layout.projectDirectory.dir("../specs")
-    val specsFile = specsDir.file("specs-$version.yaml")
-    inputSpec.set(specsFile.toString())
+    val specsFile = rootProject.ext["spec-${version}"] as String
+    inputSpec.set(specsFile)
 
     /**
      * Здесь указываем, что нам нужны только модели, все остальное не нужно
@@ -41,7 +40,7 @@ openApiGenerate {
 kotlin {
     sourceSets {
         commonMain {
-            kotlin.srcDir(layout.buildDirectory.dir("generate-resources/main/src"))
+            kotlin.srcDir(layout.buildDirectory.dir("generate-resources/main/src/main/kotlin"))
             dependencies {
                 implementation(projects.metricMindCommon)
 
@@ -64,11 +63,8 @@ kotlin {
     }
 }
 
-tasks {
-    filter { task ->
-        task.name.startsWith("compile")
+tasks
+    .filter { task -> task.name.startsWith("compile") }
+    .forEach { task ->
+        task.dependsOn(tasks.openApiGenerate)
     }
-        .forEach { task ->
-            task.dependsOn(openApiGenerate)
-        }
-}

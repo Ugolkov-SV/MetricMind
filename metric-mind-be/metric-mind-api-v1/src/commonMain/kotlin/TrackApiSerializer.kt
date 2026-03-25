@@ -9,14 +9,14 @@ val apiV1Mapper: Json = Json {
 }
 
 @Suppress("UNCHECKED_CAST")
-fun <T : IRequest> apiV1RequestDeserialize(json: String) =
+fun <T : IRequest> apiV1RequestDeserialize(json: String): T =
     apiV1Mapper.decodeFromString<IRequest>(json) as T
 
 fun apiV1ResponseSerialize(obj: IResponse): String =
     apiV1Mapper.encodeToString(IResponse.serializer(), obj)
 
 @Suppress("UNCHECKED_CAST")
-fun <T : IResponse> apiV1ResponseDeserialize(json: String) =
+fun <T : IResponse> apiV1ResponseDeserialize(json: String): T =
     apiV1Mapper.decodeFromString<IResponse>(json) as T
 
 inline fun <reified T : IResponse> apiV1ResponseSimpleDeserialize(json: String) =

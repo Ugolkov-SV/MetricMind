@@ -37,7 +37,7 @@ paths:
     post:
       tags:
         - track
-      summary: Обновление существующего трека.
+      summary: Чтение существующего трека.
       operationId: readTrack
       requestBody:
         content:
@@ -307,8 +307,7 @@ components:
       type: string
       description: Тип трека
       enum:
-        - int
-        - float
+        - number
         - inc
         - duration
     
@@ -370,15 +369,17 @@ components:
     TrackRecord:
       type: object
       required:
+        - trackRecordId
         - trackId
         - value
         - date
       properties:
+        trackRecordId:
+          $ref: '#/components/schemas/Id'
         trackId:
           $ref: '#/components/schemas/Id'
         value:
           type: number
-          format: Double
           description: Значение
           example: 45
         date:
@@ -451,6 +452,10 @@ components:
     TrackUpdateRs:
       allOf:
         - $ref: '#/components/schemas/IResponse'
+        - type: object
+          properties:
+            track:
+              $ref: '#/components/schemas/TrackId'
 
     TrackDeleteRq:
       allOf:
@@ -466,6 +471,10 @@ components:
     TrackDeleteRs:
       allOf:
         - $ref: '#/components/schemas/IResponse'
+        - type: object
+          properties:
+            track:
+              $ref: '#/components/schemas/TrackId'
 
     TrackSearchRq:
       allOf:
@@ -519,6 +528,10 @@ components:
     TrackRecordCreateRs:
       allOf:
         - $ref: '#/components/schemas/IResponse'
+        - type: object
+          properties:
+            trackRecordId:
+              $ref: '#/components/schemas/Id'
 
     TrackRecordReadRq:
       allOf:
@@ -555,6 +568,10 @@ components:
     TrackRecordUpdateRs:
       allOf:
         - $ref: '#/components/schemas/IResponse'
+        - type: object
+          properties:
+            trackRecordId:
+              $ref: '#/components/schemas/Id'
 
     TrackRecordDeleteRq:
       allOf:
@@ -579,6 +596,10 @@ components:
     TrackRecordDeleteRs:
       allOf:
         - $ref: '#/components/schemas/IResponse'
+        - type: object
+          properties:
+            trackRecordId:
+              $ref: '#/components/schemas/Id'
 
     # STUBS
     RequestDebug:

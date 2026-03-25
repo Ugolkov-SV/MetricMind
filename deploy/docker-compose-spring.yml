@@ -1,0 +1,78 @@
+# Адреса:
+# Приложение доступно по http://localhost:8801 (envoy прокси)
+# Панели мониторинга http://localhost:5601 (opensearch dashboards, kibana)
+
+services:
+  app:
+    image: metric-mind-spring:0.0.1
+    container_name: metric-mind-spring
+    depends_on:
+      - envoy
+      - fluent-bit
+
+  envoy:
+    image: envoyproxy/envoy:v1.37.1
+    container_name: metric-mind-envoy
+    volumes:
+      - ./volumes/envoy/metric-mind.yaml:/etc/envoy/envoy.yaml
+    ports:
+      - "8801:8801"
+      - "9901:9901"
+
+  fluent-bit:
+    image: fluent/fluent-bit:4.2.2
+    container_name: metric-mind-fluent-bit
+    ports:
+      # необходимо открыть порты, которые используются плагином forward
+      - "24224:24224"
+      - "24224:24224/udp"
+      - "2020:2020"
+    environment:
+      - opensearch_host=opensearch
+      - opensearch_user=admin
+      - opensearch_pass=adm-Password0
+    volumes:
+      - ./volumes/fluent-bit-etc/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - ./volumes/fluent-bit-etc/parsers.conf:/fluent-bit/etc/parsers.conf
+
+  opensearch:
+    image: opensearchproject/opensearch:3.5.0
+    container_name: metric-mind-opensearch
+    environment:
+      - discovery.type=single-node
+      - http.port=9200
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=adm-Password0
+    ports:
+      - '9200:9200'
+      - '9600:9600'
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -ku admin:adm-Password0 https://localhost:9200/_cluster/health?pretty | grep status | grep -q '\\(green\\|yellow\\)'"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+
+  dashboards:
+    image: opensearchproject/opensearch-dashboards:3.5.0
+    container_name: metric-mind-opensearch-dashboards
+    ports:
+      - "5601:5601"
+    expose:
+      - "5601"
+    environment:
+      OPENSEARCH_HOSTS: '["https://opensearch:9200"]'
+    depends_on:
+      opensearch:
+        condition: service_healthy

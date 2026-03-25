@@ -1,7 +1,6 @@
-package ru.otus.otuskotlin.marketplace.api.v2
+package io.ugolkov.metric_mind.api.v1
 
 import io.ugolkov.api.v1.models.*
-import io.ugolkov.metric_mind.api.v1.apiV1Mapper
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -14,7 +13,7 @@ class RequestV2SerializationTest {
         ),
         track = TrackWrite(
             title = "track title",
-            type = TrackType.INT,
+            type = TrackType.NUMBER,
             unit = "unit",
             visibility = Visibility.PRIVATE,
             createDate = 0,

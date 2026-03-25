@@ -1,0 +1,17 @@
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,env,metrics,health
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    use-root-path: true
+    urls:
+      - name: v1
+        url: specs-v1.yaml
