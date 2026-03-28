@@ -1,6 +1,7 @@
 package io.ugolkov.metric_mind.logger.base
 
 import kotlin.time.Clock
+import kotlin.time.measureTimedValue
 
 interface ILogWrapper {
     val loggerId: String
@@ -35,6 +36,29 @@ interface ILogWrapper {
         data: Any? = null,
         objs: Map<String, Any>? = null,
     ) = log(msg, LogLevel.DEBUG, marker, null, data, objs)
+
+    suspend fun <T> doWithLogging(
+        id: String = "",
+        level: LogLevel = LogLevel.INFO,
+        block: suspend () -> T,
+    ): T = try {
+        log("Started $loggerId $id", level)
+        val (result, diffTime) = measureTimedValue { block() }
+
+        log(
+            msg = "Finished $loggerId $id",
+            level = level,
+            objs = mapOf("metricHandleTime" to diffTime.toIsoString())
+        )
+        result
+    } catch (e: Throwable) {
+        log(
+            msg = "Failed $loggerId $id",
+            level = LogLevel.ERROR,
+            e = e
+        )
+        throw e
+    }
 
     companion object {
         val DEFAULT = object : ILogWrapper {

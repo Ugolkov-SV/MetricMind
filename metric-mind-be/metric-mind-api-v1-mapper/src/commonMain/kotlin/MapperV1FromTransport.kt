@@ -153,6 +153,7 @@ private fun Debug?.transportToStubCase(): MmStubs =
         Stubs.BAD_TITLE -> MmStubs.BAD_TITLE
         Stubs.BAD_VISIBILITY -> MmStubs.BAD_VISIBILITY
         Stubs.BAD_SEARCH_STRING -> MmStubs.BAD_SEARCH_STRING
+        Stubs.BAD_VALUE -> MmStubs.BAD_VALUE
         Stubs.DB_ERROR -> MmStubs.DB_ERROR
         null -> MmStubs.NONE
     }

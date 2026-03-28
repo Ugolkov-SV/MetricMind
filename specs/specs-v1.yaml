@@ -632,4 +632,5 @@ components:
         - badTitle
         - badVisibility
         - badSearchString
+        - badValue
         - dbError
