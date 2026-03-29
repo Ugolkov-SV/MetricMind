@@ -18,3 +18,17 @@ inline fun MmContext.fail(error: MmError) {
     errors.add(error)
     state = MmState.FAILING
 }
+
+inline fun errorValidation(
+    field: String,
+    /**
+     * Код, характеризующий ошибку. Не должен включать имя поля или указание на валидацию.
+     * Например: empty, badSymbols, tooLong, etc
+     */
+    violationCode: String,
+    description: String,
+) = MmError(
+    code = "validation-$field-$violationCode",
+    field = field,
+    message = "Validation error for field $field: $description",
+)

@@ -7,15 +7,15 @@ import io.ugolkov.metric_mind.common.model.*
 
 fun MmContext.toTransport(): IResponse =
     when (val cmd = command) {
-        MmCommand.CREATE if !trackRequest.isEmpty() -> toTransportTrackCreate()
-        MmCommand.READ if !trackRequest.isEmpty() -> toTransportTrackRead()
-        MmCommand.UPDATE if !trackRequest.isEmpty() -> toTransportTrackUpdate()
-        MmCommand.DELETE if !trackRequest.isEmpty() -> toTransportTrackDelete()
-        MmCommand.SEARCH if !trackFilterRequest.isEmpty() -> toTransportTrackSearch()
-        MmCommand.CREATE if !trackRecordRequest.isEmpty() -> toTransportTrackRecordCreate()
-        MmCommand.READ if !trackRecordRequest.isEmpty() -> toTransportTrackRecordRead()
-        MmCommand.UPDATE if !trackRecordRequest.isEmpty() -> toTransportTrackRecordUpdate()
-        MmCommand.DELETE if !trackRecordRequest.isEmpty() -> toTransportTrackRecordDelete()
+        MmCommand.CREATE if trackRequest.isNotNone() -> toTransportTrackCreate()
+        MmCommand.READ if trackRequest.isNotNone() -> toTransportTrackRead()
+        MmCommand.UPDATE if trackRequest.isNotNone() -> toTransportTrackUpdate()
+        MmCommand.DELETE if trackRequest.isNotNone() -> toTransportTrackDelete()
+        MmCommand.SEARCH if trackFilterRequest.isNotNone() -> toTransportTrackSearch()
+        MmCommand.CREATE if trackRecordRequest.isNotNone() -> toTransportTrackRecordCreate()
+        MmCommand.READ if trackRecordRequest.isNotNone() -> toTransportTrackRecordRead()
+        MmCommand.UPDATE if trackRecordRequest.isNotNone() -> toTransportTrackRecordUpdate()
+        MmCommand.DELETE if trackRecordRequest.isNotNone() -> toTransportTrackRecordDelete()
         else -> throw NotValidCommand(cmd)
     }
 

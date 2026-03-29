@@ -18,6 +18,14 @@ data class MmContext(
     var trackRecordRequest: MmTrackRecord = MmTrackRecord.NONE,
     var trackFilterRequest: MmTrackFilter = MmTrackFilter.NONE,
 
+    var trackValidating: MmTrack = MmTrack.NONE,
+    var trackRecordValidating: MmTrackRecord = MmTrackRecord.NONE,
+    var trackFilterValidating: MmTrackFilter = MmTrackFilter.NONE,
+
+    var trackValidated: MmTrack = MmTrack.NONE,
+    var trackRecordValidated: MmTrackRecord = MmTrackRecord.NONE,
+    var trackFilterValidated: MmTrackFilter = MmTrackFilter.NONE,
+
     var trackResponse: MutableList<MmTrack> = mutableListOf(),
     var trackRecordResponse: MutableList<MmTrackRecord> = mutableListOf(),
 )

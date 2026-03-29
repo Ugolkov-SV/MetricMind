@@ -6,8 +6,8 @@ data class MmTrackRecord(
     var value: Double = Double.NaN,
     var date: Long = 0L,
 ) {
-    fun isEmpty(): Boolean =
-        this == NONE
+    fun isNotNone(): Boolean =
+        this !== NONE
 
     companion object {
         val NONE = MmTrackRecord()
