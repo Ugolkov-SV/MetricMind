@@ -1,8 +1,8 @@
 package stub
 
 import io.ugolkov.metric_mind.biz.MmProcessor
-import io.ugolkov.metric_mind.common.MmContext
 import io.ugolkov.metric_mind.common.MmCorSettings
+import io.ugolkov.metric_mind.common.TrackRecordContext
 import io.ugolkov.metric_mind.common.model.*
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -15,16 +15,16 @@ class StubTrackRecordUpdateTest {
     @Test
     fun update() = runTest {
         val trackRecordRequest = createTrackRecordRequest()
-        val context = MmContext(
+        val context = TrackRecordContext(
             command = MmCommand.UPDATE,
             workMode = MmWorkMode.STUB,
             stubCase = MmStubs.SUCCESS,
-            trackRecordRequest = trackRecordRequest,
+            request = trackRecordRequest,
         )
 
         processor.exec(context)
 
-        with(context.trackRecordResponse.first()) {
+        with(context.response.first()) {
             assertEquals(trackRecordRequest.trackRecordId, this.trackRecordId)
             assertEquals(trackRecordRequest.trackId, this.trackId)
             assertEquals(trackRecordRequest.value, this.value)
@@ -35,16 +35,16 @@ class StubTrackRecordUpdateTest {
     @Test
     fun badValue() = runTest {
         val trackRecordRequest = createTrackRecordRequest(Double.NaN)
-        val context = MmContext(
+        val context = TrackRecordContext(
             command = MmCommand.UPDATE,
             workMode = MmWorkMode.STUB,
             stubCase = MmStubs.BAD_VALUE,
-            trackRecordRequest = trackRecordRequest,
+            request = trackRecordRequest,
         )
 
         processor.exec(context)
 
-        assertTrue(context.trackResponse.isEmpty())
+        assertTrue(context.response.isEmpty())
         with(context.errors.first()) {
             assertEquals("validation-value", this.code)
             assertEquals("value", this.field)
@@ -55,16 +55,16 @@ class StubTrackRecordUpdateTest {
     @Test
     fun dbError() = runTest {
         val trackRecordRequest = createTrackRecordRequest()
-        val context = MmContext(
+        val context = TrackRecordContext(
             command = MmCommand.UPDATE,
             workMode = MmWorkMode.STUB,
             stubCase = MmStubs.DB_ERROR,
-            trackRecordRequest = trackRecordRequest,
+            request = trackRecordRequest,
         )
 
         processor.exec(context)
 
-        assertTrue(context.trackResponse.isEmpty())
+        assertTrue(context.response.isEmpty())
         with(context.errors.first()) {
             assertEquals("internal-db", this.code)
             assertEquals("Internal error", this.message)
@@ -74,16 +74,16 @@ class StubTrackRecordUpdateTest {
     @Test
     fun noCase() = runTest {
         val trackRecordRequest = createTrackRecordRequest()
-        val context = MmContext(
+        val context = TrackRecordContext(
             command = MmCommand.UPDATE,
             workMode = MmWorkMode.STUB,
             stubCase = MmStubs.BAD_ID,
-            trackRecordRequest = trackRecordRequest,
+            request = trackRecordRequest,
         )
 
         processor.exec(context)
 
-        assertTrue(context.trackResponse.isEmpty())
+        assertTrue(context.response.isEmpty())
         with(context.errors.first()) {
             assertEquals("validation", this.code)
             assertEquals("stub", this.field)

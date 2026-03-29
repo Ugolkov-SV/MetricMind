@@ -1,7 +1,7 @@
 package validation
 
 import io.ugolkov.metric_mind.biz.validation.validateSearchStringLength
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.TrackFilterContext
 import io.ugolkov.metric_mind.common.model.MmState
 import io.ugolkov.metric_mind.common.model.MmTrackFilter
 import io.ugolkov.metric_mind.cor.rootChain
@@ -13,8 +13,11 @@ class ValidateSearchStringLengthTest {
     @Test
     fun emptyString() =
         runTest {
-            val ctx = MmContext(state = MmState.RUNNING, trackFilterValidating = MmTrackFilter(searchString = ""))
+            val ctx = TrackFilterContext(state = MmState.RUNNING)
+                .apply { validating = MmTrackFilter(searchString = "") }
+
             chain.exec(ctx)
+
             assertEquals(MmState.RUNNING, ctx.state)
             assertEquals(0, ctx.errors.size)
         }
@@ -22,8 +25,11 @@ class ValidateSearchStringLengthTest {
     @Test
     fun blankString() =
         runTest {
-            val ctx = MmContext(state = MmState.RUNNING, trackFilterValidating = MmTrackFilter(searchString = "  "))
+            val ctx = TrackFilterContext(state = MmState.RUNNING)
+                .apply { validating = MmTrackFilter(searchString = "   ") }
+
             chain.exec(ctx)
+
             assertEquals(MmState.RUNNING, ctx.state)
             assertEquals(0, ctx.errors.size)
         }
@@ -31,8 +37,11 @@ class ValidateSearchStringLengthTest {
     @Test
     fun shortString() =
         runTest {
-            val ctx = MmContext(state = MmState.RUNNING, trackFilterValidating = MmTrackFilter(searchString = "12"))
+            val ctx = TrackFilterContext(state = MmState.RUNNING)
+                .apply { validating = MmTrackFilter(searchString = "12") }
+
             chain.exec(ctx)
+
             assertEquals(MmState.FAILING, ctx.state)
             assertEquals(1, ctx.errors.size)
             assertEquals("validation-searchString-tooShort", ctx.errors.first().code)
@@ -41,8 +50,11 @@ class ValidateSearchStringLengthTest {
     @Test
     fun normalString() =
         runTest {
-            val ctx = MmContext(state = MmState.RUNNING, trackFilterValidating = MmTrackFilter(searchString = "123"))
+            val ctx = TrackFilterContext(state = MmState.RUNNING)
+                .apply { validating = MmTrackFilter(searchString = "123") }
+
             chain.exec(ctx)
+
             assertEquals(MmState.RUNNING, ctx.state)
             assertEquals(0, ctx.errors.size)
         }
@@ -50,11 +62,11 @@ class ValidateSearchStringLengthTest {
     @Test
     fun longString() =
         runTest {
-            val ctx = MmContext(
-                state = MmState.RUNNING,
-                trackFilterValidating = MmTrackFilter(searchString = "12".repeat(51))
-            )
+            val ctx = TrackFilterContext(state = MmState.RUNNING)
+                .apply { validating = MmTrackFilter(searchString = "12".repeat(51)) }
+
             chain.exec(ctx)
+
             assertEquals(MmState.FAILING, ctx.state)
             assertEquals(1, ctx.errors.size)
             assertEquals("validation-searchString-tooLong", ctx.errors.first().code)

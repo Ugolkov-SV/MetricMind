@@ -1,9 +1,12 @@
 package io.ugolkov.metric_mind.spring.controller
 
 import io.ugolkov.api.v1.models.*
-import io.ugolkov.metric_mind.api.v1.mappers.*
+import io.ugolkov.metric_mind.api.v1.mappers.toTransportTrackCreate
+import io.ugolkov.metric_mind.api.v1.mappers.toTransportTrackDelete
+import io.ugolkov.metric_mind.api.v1.mappers.toTransportTrackRead
+import io.ugolkov.metric_mind.api.v1.mappers.toTransportTrackUpdate
 import io.ugolkov.metric_mind.common.IProcessor
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.TrackContext
 import io.ugolkov.metric_mind.spring.config.MetricMindConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
@@ -37,7 +40,7 @@ class TrackControllerV1Test {
                     createDate = 0,
                 )
             ),
-            responseObj = MmContext().toTransportTrackCreate()
+            responseObj = TrackContext().toTransportTrackCreate()
         )
 
     @Test
@@ -45,7 +48,7 @@ class TrackControllerV1Test {
         testStubTrack(
             url = "$TRACK_PATH/read",
             requestObj = TrackReadRq(TrackId(id = 0)),
-            responseObj = MmContext().toTransportTrackRead()
+            responseObj = TrackContext().toTransportTrackRead()
         )
 
     @Test
@@ -60,7 +63,7 @@ class TrackControllerV1Test {
                     visibility = Visibility.PRIVATE,
                 )
             ),
-            responseObj = MmContext().toTransportTrackUpdate()
+            responseObj = TrackContext().toTransportTrackUpdate()
         )
 
     @Test
@@ -68,15 +71,7 @@ class TrackControllerV1Test {
         testStubTrack(
             url = "$TRACK_PATH/delete",
             requestObj = TrackDeleteRq(TrackId(id = 0)),
-            responseObj = MmContext().toTransportTrackDelete()
-        )
-
-    @Test
-    fun searchTrack() =
-        testStubTrack(
-            url = "$TRACK_PATH/search",
-            requestObj = TrackSearchRq(TrackSearchRqAllOfFilter(searchTrack = "test")),
-            responseObj = MmContext().toTransportTrackSearch()
+            responseObj = TrackContext().toTransportTrackDelete()
         )
 
     private inline fun <reified Rq : IRequest, reified Rs : IResponse> testStubTrack(

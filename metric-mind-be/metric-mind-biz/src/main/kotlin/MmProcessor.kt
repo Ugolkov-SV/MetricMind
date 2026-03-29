@@ -4,14 +4,10 @@ import io.ugolkov.metric_mind.biz.cor.initStatus
 import io.ugolkov.metric_mind.biz.cor.operation
 import io.ugolkov.metric_mind.biz.cor.stub
 import io.ugolkov.metric_mind.biz.cor.validation
-import io.ugolkov.metric_mind.biz.helper.fail
 import io.ugolkov.metric_mind.biz.stub.*
 import io.ugolkov.metric_mind.biz.validation.*
-import io.ugolkov.metric_mind.common.IProcessor
-import io.ugolkov.metric_mind.common.MmContext
-import io.ugolkov.metric_mind.common.MmCorSettings
+import io.ugolkov.metric_mind.common.*
 import io.ugolkov.metric_mind.common.model.MmCommand
-import io.ugolkov.metric_mind.common.model.MmError
 import io.ugolkov.metric_mind.common.model.MmTrackId
 import io.ugolkov.metric_mind.cor.Chain
 import io.ugolkov.metric_mind.cor.rootChain
@@ -20,7 +16,7 @@ import io.ugolkov.metric_mind.cor.worker
 @Suppress("unused")
 class MmProcessor(val corSettings: MmCorSettings) : IProcessor {
 
-    private val trackChain: Chain<MmContext> = rootChain {
+    private val trackChain: Chain<TrackContext> = rootChain {
         initStatus("Инициализация")
 
         operation(
@@ -36,29 +32,29 @@ class MmProcessor(val corSettings: MmCorSettings) : IProcessor {
             }
 
             validation {
-                worker("Копируем поля в trackValidating") { trackValidating = trackRequest.copy() }
-                worker("Очистка id") { trackValidating.id = MmTrackId.NONE }
-                worker("Очистка заголовка") { trackValidating.title = trackValidating.title.trim() }
-                worker("Очистка единиц измерения") { trackValidating.unit = trackValidating.unit.trim() }
+                worker("Копируем поля в trackValidating") { validating = request.copy() }
+                worker("Очистка id") { validating.id = MmTrackId.NONE }
+                worker("Очистка заголовка") { validating.title = validating.title.trim() }
+                worker("Очистка единиц измерения") { validating.unit = validating.unit.trim() }
                 validateFieldNotEmpty(
                     title = "Проверка, что заголовок не пуст",
                     field = "title",
-                    selector = { trackValidating.title },
+                    selector = { validating.title },
                 )
                 validateFieldHasContent(
                     title = "Проверка символов в заголовке",
                     field = "title",
-                    selector = { trackValidating.title },
+                    selector = { validating.title },
                 )
                 validateFieldHasContent(
                     title = "Проверка символов в единицах измерения",
                     field = "unit",
-                    selector = { trackValidating.unit },
+                    selector = { validating.unit },
                 )
                 validateDateNotFuture(
                     title = "Проверка даты",
                     field = "createDate",
-                    selector = { trackValidating.createDate },
+                    selector = { validating.createDate },
                 )
 
                 finishTrackValidation("Завершение проверок")
@@ -76,11 +72,11 @@ class MmProcessor(val corSettings: MmCorSettings) : IProcessor {
             }
 
             validation {
-                worker("Копируем поля в trackValidating") { trackValidating = trackRequest.copy() }
+                worker("Копируем поля в trackValidating") { validating = request.copy() }
                 validateIdMoreZero(
                     title = "Проверка на наличие id",
                     field = "id",
-                    selector = { trackValidating.id },
+                    selector = { validating.id },
                 )
 
                 finishTrackValidation("Успешное завершение процедуры валидации")
@@ -99,33 +95,33 @@ class MmProcessor(val corSettings: MmCorSettings) : IProcessor {
             }
 
             validation {
-                worker("Копируем поля в trackValidating") { trackValidating = trackRequest.copy() }
-                worker("Очистка заголовка") { trackValidating.title = trackValidating.title.trim() }
-                worker("Очистка единиц измерения") { trackValidating.unit = trackValidating.unit.trim() }
+                worker("Копируем поля в trackValidating") { validating = request.copy() }
+                worker("Очистка заголовка") { validating.title = validating.title.trim() }
+                worker("Очистка единиц измерения") { validating.unit = validating.unit.trim() }
                 validateIdMoreZero(
                     title = "Проверка на наличие id",
                     field = "id",
-                    selector = { trackValidating.id },
+                    selector = { validating.id },
                 )
                 validateFieldNotEmpty(
                     title = "Проверка, что заголовок не пуст",
                     field = "title",
-                    selector = { trackValidating.title },
+                    selector = { validating.title },
                 )
                 validateFieldHasContent(
                     title = "Проверка символов в заголовке",
                     field = "title",
-                    selector = { trackValidating.title },
+                    selector = { validating.title },
                 )
                 validateFieldHasContent(
                     title = "Проверка символов в единицах измерения",
                     field = "unit",
-                    selector = { trackValidating.unit },
+                    selector = { validating.unit },
                 )
                 validateDateNotFuture(
                     title = "Проверка даты",
                     field = "createDate",
-                    selector = { trackValidating.createDate },
+                    selector = { validating.createDate },
                 )
 
                 finishTrackValidation("Успешное завершение процедуры валидации")
@@ -143,37 +139,19 @@ class MmProcessor(val corSettings: MmCorSettings) : IProcessor {
             }
 
             validation {
-                worker("Копируем поля в trackValidating") { trackValidating = trackRequest.copy() }
+                worker("Копируем поля в trackValidating") { validating = request.copy() }
                 validateIdMoreZero(
                     title = "Проверка на наличие id",
                     field = "id",
-                    selector = { trackValidating.id },
+                    selector = { validating.id },
                 )
 
                 finishTrackValidation("Успешное завершение процедуры валидации")
             }
         }
-        operation(
-            title = "Поиск трека",
-            command = MmCommand.SEARCH,
-        ) {
-            stub("Обработка стабов") {
-                stubTrackSearchSuccess("Успешный поиск трека", corSettings)
-                stubValidationBadId("Ошибка валидации id")
-                stubDbError("Ошибка работы с БД")
-                stubNoCase("Ошибка: запрошенный стаб недопустим")
-            }
-
-            validation {
-                worker("Копируем поля в trackFilterValidating") { trackFilterValidating = trackFilterRequest.copy() }
-                validateSearchStringLength("Валидация длины строки поиска в фильтре")
-
-                finishTrackFilterValidation("Успешное завершение процедуры валидации")
-            }
-        }
     }
 
-    private val trackRecordChain: Chain<MmContext> = rootChain {
+    private val trackRecordChain: Chain<TrackRecordContext> = rootChain {
         initStatus("Инициализация")
 
         operation(
@@ -188,18 +166,18 @@ class MmProcessor(val corSettings: MmCorSettings) : IProcessor {
             }
 
             validation {
-                worker("Копируем поля в trackRecordValidating") { trackRecordValidating = trackRecordRequest.copy() }
-                worker("Очистка trackRecordId") { trackRecordValidating.trackRecordId = MmTrackId.NONE }
+                worker("Копируем поля в trackRecordValidating") { validating = request.copy() }
+                worker("Очистка trackRecordId") { validating.trackRecordId = MmTrackId.NONE }
                 validateIdMoreZero(
                     title = "Проверка на наличие trackId",
                     field = "trackId",
-                    selector = { trackRecordValidating.trackId },
+                    selector = { validating.trackId },
                 )
                 validateValueNotEmpty(title = "Проверка, что есть значение для записи")
                 validateDateNotFuture(
                     title = "Проверка даты",
                     field = "date",
-                    selector = { trackRecordValidating.date },
+                    selector = { validating.date },
                 )
 
                 finishTrackRecordValidation("Завершение проверок")
@@ -217,11 +195,11 @@ class MmProcessor(val corSettings: MmCorSettings) : IProcessor {
             }
 
             validation {
-                worker("Копируем поля в trackRecordValidating") { trackRecordValidating = trackRecordRequest.copy() }
+                worker("Копируем поля в trackRecordValidating") { validating = request.copy() }
                 validateIdMoreZero(
                     title = "Проверка на наличие trackRecordId",
                     field = "trackRecordId",
-                    selector = { trackRecordValidating.trackRecordId },
+                    selector = { validating.trackRecordId },
                 )
 
                 finishTrackRecordValidation("Успешное завершение процедуры валидации")
@@ -239,22 +217,22 @@ class MmProcessor(val corSettings: MmCorSettings) : IProcessor {
             }
 
             validation {
-                worker("Копируем поля в trackRecordValidating") { trackRecordValidating = trackRecordRequest.copy() }
+                worker("Копируем поля в trackRecordValidating") { validating = request.copy() }
                 validateIdMoreZero(
                     title = "Проверка на наличие trackRecordId",
                     field = "trackRecordId",
-                    selector = { trackRecordValidating.trackRecordId },
+                    selector = { validating.trackRecordId },
                 )
                 validateIdMoreZero(
                     title = "Проверка на наличие trackId",
                     field = "trackId",
-                    selector = { trackRecordValidating.trackId },
+                    selector = { validating.trackId },
                 )
                 validateValueNotEmpty(title = "Проверка, что есть значение для записи")
                 validateDateNotFuture(
                     title = "Проверка даты",
                     field = "date",
-                    selector = { trackRecordValidating.date },
+                    selector = { validating.date },
                 )
 
                 finishTrackRecordValidation("Успешное завершение процедуры валидации")
@@ -272,11 +250,11 @@ class MmProcessor(val corSettings: MmCorSettings) : IProcessor {
             }
 
             validation {
-                worker("Копируем поля в trackRecordValidating") { trackRecordValidating = trackRecordRequest.copy() }
+                worker("Копируем поля в trackRecordValidating") { validating = request.copy() }
                 validateIdMoreZero(
                     title = "Проверка на наличие trackRecordId",
                     field = "trackRecordId",
-                    selector = { trackRecordValidating.trackRecordId },
+                    selector = { validating.trackRecordId },
                 )
 
                 finishTrackRecordValidation("Успешное завершение процедуры валидации")
@@ -284,18 +262,33 @@ class MmProcessor(val corSettings: MmCorSettings) : IProcessor {
         }
     }
 
-    override suspend fun exec(ctx: MmContext) {
-        when {
-            ctx.trackRequest.isNotNone() ||
-                    ctx.trackFilterRequest.isNotNone() -> trackChain.exec(ctx)
+    private val trackFilterChain: Chain<TrackFilterContext> = rootChain {
+        initStatus("Инициализация")
 
-            ctx.trackRecordRequest.isNotNone() -> trackRecordChain.exec(ctx)
-            else -> ctx.fail(
-                MmError(
-                    code = "Unknown request",
-                    message = "Internal error"
-                )
-            )
+        operation(
+            title = "Поиск трека",
+            command = MmCommand.SEARCH,
+        ) {
+            stub("Обработка стабов") {
+                stubTrackSearchSuccess("Успешный поиск трека", corSettings)
+                stubDbError("Ошибка работы с БД")
+                stubNoCase("Ошибка: запрошенный стаб недопустим")
+            }
+
+            validation {
+                worker("Копируем поля в trackFilterValidating") { validating = request.copy() }
+                validateSearchStringLength("Валидация длины строки поиска в фильтре")
+
+                finishTrackFilterValidation("Успешное завершение процедуры валидации")
+            }
+        }
+    }
+
+    override suspend fun exec(ctx: BaseContext) {
+        when (ctx) {
+            is TrackContext -> trackChain.exec(ctx)
+            is TrackRecordContext -> trackRecordChain.exec(ctx)
+            is TrackFilterContext -> trackFilterChain.exec(ctx)
         }
     }
 }

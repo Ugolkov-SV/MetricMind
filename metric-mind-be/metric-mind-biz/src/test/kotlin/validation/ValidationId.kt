@@ -1,7 +1,8 @@
 package validation
 
 import io.ugolkov.metric_mind.biz.MmProcessor
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.TrackContext
+import io.ugolkov.metric_mind.common.TrackRecordContext
 import io.ugolkov.metric_mind.common.model.*
 import kotlinx.coroutines.test.runTest
 import kotlin.test.assertContains
@@ -10,11 +11,11 @@ import kotlin.test.assertNotEquals
 
 fun validationTrackIdCorrect(command: MmCommand, processor: MmProcessor) =
     runTest {
-        val ctx = MmContext(
+        val ctx = TrackContext(
             command = command,
             state = MmState.NONE,
             workMode = MmWorkMode.TEST,
-            trackRequest = MmTrack(
+            request = MmTrack(
                 id = MmTrackId(7L),
                 title = "abc",
                 type = MmTrackType.NUMBER,
@@ -31,11 +32,11 @@ fun validationTrackIdCorrect(command: MmCommand, processor: MmProcessor) =
 
 fun validationTrackIdZero(command: MmCommand, processor: MmProcessor) =
     runTest {
-        val ctx = MmContext(
+        val ctx = TrackContext(
             command = command,
             state = MmState.NONE,
             workMode = MmWorkMode.TEST,
-            trackRequest = MmTrack(
+            request = MmTrack(
                 id = MmTrackId(0L),
                 title = "abc",
                 type = MmTrackType.NUMBER,
@@ -55,11 +56,11 @@ fun validationTrackIdZero(command: MmCommand, processor: MmProcessor) =
 
 fun validationTrackRecordIdCorrect(command: MmCommand, processor: MmProcessor) =
     runTest {
-        val ctx = MmContext(
+        val ctx = TrackRecordContext(
             command = command,
             state = MmState.NONE,
             workMode = MmWorkMode.TEST,
-            trackRecordRequest = MmTrackRecord(
+            request = MmTrackRecord(
                 trackRecordId = MmTrackId(7L),
                 trackId = MmTrackId(7L),
                 value = 10.0,
@@ -74,11 +75,11 @@ fun validationTrackRecordIdCorrect(command: MmCommand, processor: MmProcessor) =
 
 fun validationTrackRecordIdZero(command: MmCommand, processor: MmProcessor) =
     runTest {
-        val ctx = MmContext(
+        val ctx = TrackRecordContext(
             command = command,
             state = MmState.NONE,
             workMode = MmWorkMode.TEST,
-            trackRecordRequest = MmTrackRecord(
+            request = MmTrackRecord(
                 trackRecordId = MmTrackId(0L),
                 trackId = MmTrackId(7L),
                 value = 10.0,
@@ -96,11 +97,11 @@ fun validationTrackRecordIdZero(command: MmCommand, processor: MmProcessor) =
 
 fun validationTrackRecordTrackIdZero(command: MmCommand, processor: MmProcessor) =
     runTest {
-        val ctx = MmContext(
+        val ctx = TrackRecordContext(
             command = command,
             state = MmState.NONE,
             workMode = MmWorkMode.TEST,
-            trackRecordRequest = MmTrackRecord(
+            request = MmTrackRecord(
                 trackRecordId = MmTrackId(7L),
                 trackId = MmTrackId(0L),
                 value = 10.0,

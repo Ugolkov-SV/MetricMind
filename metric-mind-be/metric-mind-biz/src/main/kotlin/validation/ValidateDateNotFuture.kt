@@ -2,14 +2,14 @@ package io.ugolkov.metric_mind.biz.validation
 
 import io.ugolkov.metric_mind.biz.helper.errorValidation
 import io.ugolkov.metric_mind.biz.helper.fail
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.BaseContext
 import io.ugolkov.metric_mind.cor.IChainDsl
 import io.ugolkov.metric_mind.cor.worker
 
-internal fun IChainDsl<MmContext>.validateDateNotFuture(
+internal fun <T : BaseContext> IChainDsl<T>.validateDateNotFuture(
     title: String,
     field: String,
-    selector: MmContext.() -> Long,
+    selector: T.() -> Long,
 ) =
     worker {
         this.title = title

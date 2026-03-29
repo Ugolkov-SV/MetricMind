@@ -2,14 +2,14 @@ package io.ugolkov.metric_mind.biz.validation
 
 import io.ugolkov.metric_mind.biz.helper.errorValidation
 import io.ugolkov.metric_mind.biz.helper.fail
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.BaseContext
 import io.ugolkov.metric_mind.cor.IChainDsl
 import io.ugolkov.metric_mind.cor.worker
 
-internal fun IChainDsl<MmContext>.validateFieldHasContent(
+internal fun <T : BaseContext> IChainDsl<T>.validateFieldHasContent(
     title: String,
     field: String,
-    selector: MmContext.() -> String,
+    selector: T.() -> String,
 ) =
     worker {
         this.title = title

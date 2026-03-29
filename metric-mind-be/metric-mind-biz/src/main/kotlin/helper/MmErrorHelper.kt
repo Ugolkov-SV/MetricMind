@@ -1,6 +1,6 @@
 package io.ugolkov.metric_mind.biz.helper
 
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.BaseContext
 import io.ugolkov.metric_mind.common.model.MmError
 import io.ugolkov.metric_mind.common.model.MmState
 
@@ -14,7 +14,7 @@ fun Throwable.asMmError(
     exception = this,
 )
 
-inline fun MmContext.fail(error: MmError) {
+inline fun BaseContext.fail(error: MmError) {
     errors.add(error)
     state = MmState.FAILING
 }

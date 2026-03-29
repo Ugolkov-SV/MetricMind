@@ -1,7 +1,7 @@
 package io.ugolkov.metric_mind.biz.stub
 
-import io.ugolkov.metric_mind.common.MmContext
 import io.ugolkov.metric_mind.common.MmCorSettings
+import io.ugolkov.metric_mind.common.TrackContext
 import io.ugolkov.metric_mind.common.model.MmState
 import io.ugolkov.metric_mind.common.model.MmStubs
 import io.ugolkov.metric_mind.common.model.MmTrackId
@@ -10,7 +10,7 @@ import io.ugolkov.metric_mind.cor.worker
 import io.ugolkov.metric_mind.logger.base.LogLevel
 import io.ugolkov.metric_mind.stubs.MmTrackStub
 
-internal fun IChainDsl<MmContext>.stubTrackReadSuccess(title: String, corSettings: MmCorSettings) =
+internal fun IChainDsl<TrackContext>.stubTrackReadSuccess(title: String, corSettings: MmCorSettings) =
     worker {
         this.title = title
         on { stubCase == MmStubs.SUCCESS && state == MmState.RUNNING }
@@ -19,9 +19,9 @@ internal fun IChainDsl<MmContext>.stubTrackReadSuccess(title: String, corSetting
             logger.doWithLogging(id = this.requestId.asString(), LogLevel.DEBUG) {
                 state = MmState.FINISHING
                 MmTrackStub.prepareResult {
-                    trackRequest.id.takeIf { it != MmTrackId.NONE }?.also { this.id = it }
+                    request.id.takeIf { it != MmTrackId.NONE }?.also { this.id = it }
                 }
-                    .let(trackResponse::add)
+                    .let(response::add)
             }
         }
     }

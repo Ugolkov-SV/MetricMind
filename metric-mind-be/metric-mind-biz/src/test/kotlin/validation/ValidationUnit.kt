@@ -1,7 +1,7 @@
 package validation
 
 import io.ugolkov.metric_mind.biz.MmProcessor
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.TrackContext
 import io.ugolkov.metric_mind.common.model.*
 import io.ugolkov.metric_mind.stubs.MmTrackStub
 import kotlinx.coroutines.test.runTest
@@ -13,11 +13,11 @@ private val stub = MmTrackStub.get()
 
 fun validationUnitCorrect(command: MmCommand, processor: MmProcessor) =
     runTest {
-        val ctx = MmContext(
+        val ctx = TrackContext(
             command = command,
             state = MmState.NONE,
             workMode = MmWorkMode.TEST,
-            trackRequest = MmTrack(
+            request = MmTrack(
                 id = stub.id,
                 title = "abc",
                 type = MmTrackType.NUMBER,
@@ -30,16 +30,16 @@ fun validationUnitCorrect(command: MmCommand, processor: MmProcessor) =
 
         assertEquals(0, ctx.errors.size)
         assertNotEquals(MmState.FAILING, ctx.state)
-        assertEquals("kg", ctx.trackValidated.unit)
+        assertEquals("kg", ctx.validated.unit)
     }
 
 fun validationUnitTrim(command: MmCommand, processor: MmProcessor) =
     runTest {
-        val ctx = MmContext(
+        val ctx = TrackContext(
             command = command,
             state = MmState.NONE,
             workMode = MmWorkMode.TEST,
-            trackRequest = MmTrack(
+            request = MmTrack(
                 id = stub.id,
                 title = "abc",
                 type = MmTrackType.NUMBER,
@@ -52,16 +52,16 @@ fun validationUnitTrim(command: MmCommand, processor: MmProcessor) =
 
         assertEquals(0, ctx.errors.size)
         assertNotEquals(MmState.FAILING, ctx.state)
-        assertEquals("kg", ctx.trackValidated.unit)
+        assertEquals("kg", ctx.validated.unit)
     }
 
 fun validationUnitSymbols(command: MmCommand, processor: MmProcessor) =
     runTest {
-        val ctx = MmContext(
+        val ctx = TrackContext(
             command = command,
             state = MmState.NONE,
             workMode = MmWorkMode.TEST,
-            trackRequest = MmTrack(
+            request = MmTrack(
                 id = stub.id,
                 title = "abc",
                 type = MmTrackType.NUMBER,

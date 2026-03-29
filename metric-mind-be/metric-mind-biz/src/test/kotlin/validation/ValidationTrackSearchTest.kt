@@ -1,6 +1,6 @@
 package validation
 
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.TrackFilterContext
 import io.ugolkov.metric_mind.common.model.MmCommand
 import io.ugolkov.metric_mind.common.model.MmState
 import io.ugolkov.metric_mind.common.model.MmTrackFilter
@@ -16,11 +16,11 @@ class ValidationTrackSearchTest : BaseValidationTest() {
     @Test
     fun correctEmpty() =
         runTest {
-            val ctx = MmContext(
+            val ctx = TrackFilterContext(
                 command = command,
                 state = MmState.NONE,
                 workMode = MmWorkMode.TEST,
-                trackFilterRequest = MmTrackFilter()
+                request = MmTrackFilter()
             )
             processor.exec(ctx)
             assertEquals(0, ctx.errors.size)

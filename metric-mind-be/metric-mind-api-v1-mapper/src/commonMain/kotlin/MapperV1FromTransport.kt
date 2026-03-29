@@ -1,83 +1,87 @@
 package io.ugolkov.metric_mind.api.v1.mappers
 
 import io.ugolkov.api.v1.models.*
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.BaseContext
+import io.ugolkov.metric_mind.common.TrackContext
+import io.ugolkov.metric_mind.common.TrackFilterContext
+import io.ugolkov.metric_mind.common.TrackRecordContext
 import io.ugolkov.metric_mind.common.model.*
 
-fun MmContext.fromTransport(request: IRequest) =
+fun BaseContext.fromTransport(request: IRequest) =
     when (request) {
-        is TrackCreateRq -> fromTransport(request)
-        is TrackReadRq -> fromTransport(request)
-        is TrackUpdateRq -> fromTransport(request)
-        is TrackDeleteRq -> fromTransport(request)
-        is TrackSearchRq -> fromTransport(request)
-        is TrackRecordCreateRq -> fromTransport(request)
-        is TrackRecordReadRq -> fromTransport(request)
-        is TrackRecordUpdateRq -> fromTransport(request)
-        is TrackRecordDeleteRq -> fromTransport(request)
+        is TrackCreateRq if this is TrackContext -> fromTransport(request)
+        is TrackReadRq if this is TrackContext -> fromTransport(request)
+        is TrackUpdateRq if this is TrackContext -> fromTransport(request)
+        is TrackDeleteRq if this is TrackContext -> fromTransport(request)
+        is TrackSearchRq if this is TrackFilterContext -> fromTransport(request)
+        is TrackRecordCreateRq if this is TrackRecordContext -> fromTransport(request)
+        is TrackRecordReadRq if this is TrackRecordContext -> fromTransport(request)
+        is TrackRecordUpdateRq if this is TrackRecordContext -> fromTransport(request)
+        is TrackRecordDeleteRq if this is TrackRecordContext -> fromTransport(request)
+        else -> Unit
     }
 
-private fun MmContext.fromTransport(request: TrackCreateRq) {
-    command = MmCommand.CREATE
-    trackRequest = request.track.toInternal()
-    workMode = request.debug.transportToWorkMode()
-    stubCase = request.debug.transportToStubCase()
+private fun TrackContext.fromTransport(request: TrackCreateRq) {
+    this.command = MmCommand.CREATE
+    this.workMode = request.debug.transportToWorkMode()
+    this.stubCase = request.debug.transportToStubCase()
+    this.request = request.track.toInternal()
 }
 
-private fun MmContext.fromTransport(request: TrackReadRq) {
-    command = MmCommand.READ
-    trackRequest = request.track.asTrack()
-    workMode = request.debug.transportToWorkMode()
-    stubCase = request.debug.transportToStubCase()
+private fun TrackContext.fromTransport(request: TrackReadRq) {
+    this.command = MmCommand.READ
+    this.workMode = request.debug.transportToWorkMode()
+    this.stubCase = request.debug.transportToStubCase()
+    this.request = request.track.asTrack()
 }
 
-private fun MmContext.fromTransport(request: TrackUpdateRq) {
-    command = MmCommand.UPDATE
-    trackRequest = request.track.toInternal()
-    workMode = request.debug.transportToWorkMode()
-    stubCase = request.debug.transportToStubCase()
+private fun TrackContext.fromTransport(request: TrackUpdateRq) {
+    this.command = MmCommand.UPDATE
+    this.workMode = request.debug.transportToWorkMode()
+    this.stubCase = request.debug.transportToStubCase()
+    this.request = request.track.toInternal()
 }
 
-private fun MmContext.fromTransport(request: TrackDeleteRq) {
-    command = MmCommand.DELETE
-    trackRequest = request.track.asTrack()
-    workMode = request.debug.transportToWorkMode()
-    stubCase = request.debug.transportToStubCase()
+private fun TrackContext.fromTransport(request: TrackDeleteRq) {
+    this.command = MmCommand.DELETE
+    this.workMode = request.debug.transportToWorkMode()
+    this.stubCase = request.debug.transportToStubCase()
+    this.request = request.track.asTrack()
 }
 
-private fun MmContext.fromTransport(request: TrackSearchRq) {
-    command = MmCommand.SEARCH
-    trackFilterRequest = request.filter.toInternal()
-    workMode = request.debug.transportToWorkMode()
-    stubCase = request.debug.transportToStubCase()
+private fun TrackFilterContext.fromTransport(request: TrackSearchRq) {
+    this.command = MmCommand.SEARCH
+    this.workMode = request.debug.transportToWorkMode()
+    this.stubCase = request.debug.transportToStubCase()
+    this.request = request.filter.toInternal()
 }
 
-private fun MmContext.fromTransport(request: TrackRecordCreateRq) {
-    command = MmCommand.CREATE
-    trackRecordRequest = request.trackRecord.toInternal()
-    workMode = request.debug.transportToWorkMode()
-    stubCase = request.debug.transportToStubCase()
+private fun TrackRecordContext.fromTransport(request: TrackRecordCreateRq) {
+    this.command = MmCommand.CREATE
+    this.workMode = request.debug.transportToWorkMode()
+    this.stubCase = request.debug.transportToStubCase()
+    this.request = request.trackRecord.toInternal()
 }
 
-private fun MmContext.fromTransport(request: TrackRecordReadRq) {
-    command = MmCommand.READ
-    trackRecordRequest = request.track.asTrackRecord()
-    workMode = request.debug.transportToWorkMode()
-    stubCase = request.debug.transportToStubCase()
+private fun TrackRecordContext.fromTransport(request: TrackRecordReadRq) {
+    this.command = MmCommand.READ
+    this.workMode = request.debug.transportToWorkMode()
+    this.stubCase = request.debug.transportToStubCase()
+    this.request = request.track.asTrackRecord()
 }
 
-private fun MmContext.fromTransport(request: TrackRecordUpdateRq) {
-    command = MmCommand.UPDATE
-    trackRecordRequest = request.trackRecord.toInternal()
-    workMode = request.debug.transportToWorkMode()
-    stubCase = request.debug.transportToStubCase()
+private fun TrackRecordContext.fromTransport(request: TrackRecordUpdateRq) {
+    this.command = MmCommand.UPDATE
+    this.workMode = request.debug.transportToWorkMode()
+    this.stubCase = request.debug.transportToStubCase()
+    this.request = request.trackRecord.toInternal()
 }
 
-private fun MmContext.fromTransport(request: TrackRecordDeleteRq) {
-    command = MmCommand.DELETE
-    trackRecordRequest = request.trackRecord.toInternal()
-    workMode = request.debug.transportToWorkMode()
-    stubCase = request.debug.transportToStubCase()
+private fun TrackRecordContext.fromTransport(request: TrackRecordDeleteRq) {
+    this.command = MmCommand.DELETE
+    this.workMode = request.debug.transportToWorkMode()
+    this.stubCase = request.debug.transportToStubCase()
+    this.request = request.trackRecord.toInternal()
 }
 
 private fun TrackWrite.toInternal(): MmTrack =
@@ -134,7 +138,7 @@ private fun TrackRecord.toInternal(): MmTrackRecord =
 
 private fun TrackRecordDeleteRqAllOfTrackRecord.toInternal(): MmTrackRecord =
     MmTrackRecord(
-        trackId = this.trackId.toTrackId(),
+        trackRecordId = this.trackRecordId.toTrackId(),
         date = this.date,
     )
 

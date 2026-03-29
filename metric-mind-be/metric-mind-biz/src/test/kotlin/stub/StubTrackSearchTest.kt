@@ -1,9 +1,12 @@
 package stub
 
 import io.ugolkov.metric_mind.biz.MmProcessor
-import io.ugolkov.metric_mind.common.MmContext
 import io.ugolkov.metric_mind.common.MmCorSettings
-import io.ugolkov.metric_mind.common.model.*
+import io.ugolkov.metric_mind.common.TrackFilterContext
+import io.ugolkov.metric_mind.common.model.MmCommand
+import io.ugolkov.metric_mind.common.model.MmStubs
+import io.ugolkov.metric_mind.common.model.MmTrackFilter
+import io.ugolkov.metric_mind.common.model.MmWorkMode
 import io.ugolkov.metric_mind.stubs.MmTrackStub
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -15,18 +18,16 @@ class StubTrackSearchTest {
 
     @Test
     fun search() = runTest {
-        val context = MmContext(
+        val context = TrackFilterContext(
             command = MmCommand.SEARCH,
             workMode = MmWorkMode.STUB,
             stubCase = MmStubs.SUCCESS,
-            trackFilterRequest = MmTrackFilter(
-                searchString = "Test track",
-            ),
+            request = MmTrackFilter(searchString = "Test track"),
         )
 
         processor.exec(context)
 
-        with(context.trackResponse.first()) {
+        with(context.response.first()) {
             val expected = MmTrackStub.get()
             assertEquals(expected.id, this.id)
             assertEquals(expected.title, this.title)
@@ -38,36 +39,17 @@ class StubTrackSearchTest {
     }
 
     @Test
-    fun badId() = runTest {
-        val context = MmContext(
-            command = MmCommand.SEARCH,
-            workMode = MmWorkMode.STUB,
-            stubCase = MmStubs.BAD_ID,
-            trackRequest = MmTrack(id = MmTrackId(0L)),
-        )
-
-        processor.exec(context)
-
-        assertTrue(context.trackResponse.isEmpty())
-        with(context.errors.first()) {
-            assertEquals("validation-id", this.code)
-            assertEquals("id", this.field)
-            assertEquals("Wrong id field", this.message)
-        }
-    }
-
-    @Test
     fun dbError() = runTest {
-        val context = MmContext(
+        val context = TrackFilterContext(
             command = MmCommand.SEARCH,
             workMode = MmWorkMode.STUB,
             stubCase = MmStubs.DB_ERROR,
-            trackRequest = MmTrack(id = MmTrackId(7L)),
+            request = MmTrackFilter(searchString = "Test track"),
         )
 
         processor.exec(context)
 
-        assertTrue(context.trackResponse.isEmpty())
+        assertTrue(context.response.isEmpty())
         with(context.errors.first()) {
             assertEquals("internal-db", this.code)
             assertEquals("Internal error", this.message)
@@ -76,31 +58,19 @@ class StubTrackSearchTest {
 
     @Test
     fun noCase() = runTest {
-        val context = MmContext(
+        val context = TrackFilterContext(
             command = MmCommand.SEARCH,
             workMode = MmWorkMode.STUB,
             stubCase = MmStubs.BAD_TITLE,
-            trackRequest = MmTrack(id = MmTrackId(7L)),
+            request = MmTrackFilter(searchString = "Test track"),
         )
 
         processor.exec(context)
 
-        assertTrue(context.trackResponse.isEmpty())
+        assertTrue(context.response.isEmpty())
         with(context.errors.first()) {
             assertEquals("validation", this.code)
             assertEquals("stub", this.field)
         }
     }
-
-    private fun createTrackRequest(
-        title: String = "Test track",
-    ): MmTrack =
-        MmTrack(
-            id = MmTrackId(7),
-            title = title,
-            type = MmTrackType.NUMBER,
-            createDate = 2026L,
-            unit = "kg",
-            visibility = MmVisibility.PRIVATE,
-        )
 }

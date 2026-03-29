@@ -1,33 +1,29 @@
 package io.ugolkov.metric_mind.biz.validation
 
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.TrackContext
+import io.ugolkov.metric_mind.common.TrackFilterContext
+import io.ugolkov.metric_mind.common.TrackRecordContext
 import io.ugolkov.metric_mind.common.model.MmState
 import io.ugolkov.metric_mind.cor.IChainDsl
 import io.ugolkov.metric_mind.cor.worker
 
-internal fun IChainDsl<MmContext>.finishTrackValidation(title: String) =
+internal fun IChainDsl<TrackContext>.finishTrackValidation(title: String) =
     worker {
         this.title = title
         on { state == MmState.RUNNING }
-        handle {
-            trackValidated = trackValidating
-        }
+        handle { validated = validating }
     }
 
-internal fun IChainDsl<MmContext>.finishTrackRecordValidation(title: String) =
+internal fun IChainDsl<TrackRecordContext>.finishTrackRecordValidation(title: String) =
     worker {
         this.title = title
         on { state == MmState.RUNNING }
-        handle {
-            trackRecordValidated = trackRecordValidating
-        }
+        handle { validated = validating }
     }
 
-internal fun IChainDsl<MmContext>.finishTrackFilterValidation(title: String) =
+internal fun IChainDsl<TrackFilterContext>.finishTrackFilterValidation(title: String) =
     worker {
         this.title = title
         on { state == MmState.RUNNING }
-        handle {
-            trackFilterValidated = trackFilterValidating
-        }
+        handle { validated = validating }
     }

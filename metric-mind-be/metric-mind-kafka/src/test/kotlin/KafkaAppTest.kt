@@ -3,7 +3,9 @@ import io.ugolkov.metric_mind.api.v1.apiV1RequestSerialize
 import io.ugolkov.metric_mind.api.v1.apiV1ResponseDeserialize
 import io.ugolkov.metric_mind.kafka.KafkaApp
 import io.ugolkov.metric_mind.kafka.KafkaConfig
-import io.ugolkov.metric_mind.kafka.strategy.ConsumerStrategyV1
+import io.ugolkov.metric_mind.kafka.strategy.ConsumerStrategyTrackFilterV1
+import io.ugolkov.metric_mind.kafka.strategy.ConsumerStrategyTrackRecordV1
+import io.ugolkov.metric_mind.kafka.strategy.ConsumerStrategyTrackV1
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.consumer.MockConsumer
 import org.apache.kafka.clients.consumer.internals.AutoOffsetResetStrategy
@@ -21,18 +23,26 @@ class KafkaAppTest {
         val consumer = MockConsumer<String, String>(AutoOffsetResetStrategy.EARLIEST.name())
         val producer = MockProducer(true, null, StringSerializer(), StringSerializer())
 
-        val app = KafkaApp(config, listOf(ConsumerStrategyV1()), consumer, producer)
+        val app = KafkaApp(
+            config,
+            listOf(
+                ConsumerStrategyTrackV1(),
+                ConsumerStrategyTrackRecordV1(),
+                ConsumerStrategyTrackFilterV1(),
+            ),
+            consumer,
+            producer,
+        )
 
-        val inputTopic = config.kafkaTopicInV1
-        val outputTopic = config.kafkaTopicOutV1
-
-        val topic = TopicPartition(inputTopic, PARTITION)
+        val trackTopic = TopicPartition(config.trackTopicInV1, PARTITION)
+        val trackRecordTopic = TopicPartition(config.trackRecordTopicInV1, PARTITION)
+        val trackFilterTopic = TopicPartition(config.trackFilterTopicInV1, PARTITION)
 
         consumer.schedulePollTask {
-            consumer.rebalance(listOf(topic))
+            consumer.rebalance(listOf(trackTopic, trackRecordTopic, trackFilterTopic))
             consumer.addRecord(
                 ConsumerRecord(
-                    inputTopic,
+                    config.trackTopicInV1,
                     PARTITION,
                     0L,
                     "test-1",
@@ -52,10 +62,36 @@ class KafkaAppTest {
                     )
                 )
             )
+            consumer.addRecord(
+                ConsumerRecord(
+                    config.trackRecordTopicInV1,
+                    PARTITION,
+                    1L,
+                    "test-2",
+                    apiV1RequestSerialize(
+                        TrackRecordCreateRq(
+                            trackRecord = TrackRecord(
+                                trackRecordId = 7L,
+                                trackId = 7L,
+                                value = 10.0,
+                                date = 2026L,
+                            ),
+                            debug = Debug(
+                                mode = Mode.STUB,
+                                stub = Stubs.SUCCESS,
+                            )
+                        )
+                    )
+                )
+            )
             app.close()
         }
 
-        val startOffsets = mutableMapOf(topic to 0L)
+        val startOffsets = mutableMapOf(
+            trackTopic to 0L,
+            trackRecordTopic to 0L,
+            trackFilterTopic to 0L,
+        )
         consumer.updateBeginningOffsets(startOffsets)
 
         app.start()
@@ -63,7 +99,7 @@ class KafkaAppTest {
         val message = producer.history().first()
         val result = apiV1ResponseDeserialize<TrackCreateRs>(message.value())
 
-        assertEquals(outputTopic, message.topic())
+        assertEquals(config.trackTopicOutV1, message.topic())
         assertNotNull(result.track)
     }
 

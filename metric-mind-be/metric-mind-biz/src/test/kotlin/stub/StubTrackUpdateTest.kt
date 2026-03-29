@@ -1,8 +1,8 @@
 package stub
 
 import io.ugolkov.metric_mind.biz.MmProcessor
-import io.ugolkov.metric_mind.common.MmContext
 import io.ugolkov.metric_mind.common.MmCorSettings
+import io.ugolkov.metric_mind.common.TrackContext
 import io.ugolkov.metric_mind.common.model.*
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -15,16 +15,16 @@ class StubTrackUpdateTest {
     @Test
     fun update() = runTest {
         val trackRequest = createTrackRequest()
-        val context = MmContext(
+        val context = TrackContext(
             command = MmCommand.UPDATE,
             workMode = MmWorkMode.STUB,
             stubCase = MmStubs.SUCCESS,
-            trackRequest = trackRequest,
+            request = trackRequest,
         )
 
         processor.exec(context)
 
-        with(context.trackResponse.first()) {
+        with(context.response.first()) {
             assertEquals(trackRequest.id, this.id)
             assertEquals(trackRequest.title, this.title)
             assertEquals(trackRequest.type, this.type)
@@ -37,16 +37,16 @@ class StubTrackUpdateTest {
     @Test
     fun badTitle() = runTest {
         val trackRequest = createTrackRequest(title = "")
-        val context = MmContext(
+        val context = TrackContext(
             command = MmCommand.UPDATE,
             workMode = MmWorkMode.STUB,
             stubCase = MmStubs.BAD_TITLE,
-            trackRequest = trackRequest,
+            request = trackRequest,
         )
 
         processor.exec(context)
 
-        assertTrue(context.trackResponse.isEmpty())
+        assertTrue(context.response.isEmpty())
         with(context.errors.first()) {
             assertEquals("validation-title", this.code)
             assertEquals("title", this.field)
@@ -57,16 +57,16 @@ class StubTrackUpdateTest {
     @Test
     fun badVisibility() = runTest {
         val trackRequest = createTrackRequest()
-        val context = MmContext(
+        val context = TrackContext(
             command = MmCommand.UPDATE,
             workMode = MmWorkMode.STUB,
             stubCase = MmStubs.BAD_VISIBILITY,
-            trackRequest = trackRequest,
+            request = trackRequest,
         )
 
         processor.exec(context)
 
-        assertTrue(context.trackResponse.isEmpty())
+        assertTrue(context.response.isEmpty())
         with(context.errors.first()) {
             assertEquals("validation-visibility", this.code)
             assertEquals("visibility", this.field)
@@ -77,16 +77,16 @@ class StubTrackUpdateTest {
     @Test
     fun dbError() = runTest {
         val trackRequest = createTrackRequest()
-        val context = MmContext(
+        val context = TrackContext(
             command = MmCommand.UPDATE,
             workMode = MmWorkMode.STUB,
             stubCase = MmStubs.DB_ERROR,
-            trackRequest = trackRequest,
+            request = trackRequest,
         )
 
         processor.exec(context)
 
-        assertTrue(context.trackResponse.isEmpty())
+        assertTrue(context.response.isEmpty())
         with(context.errors.first()) {
             assertEquals("internal-db", this.code)
             assertEquals("Internal error", this.message)
@@ -96,16 +96,16 @@ class StubTrackUpdateTest {
     @Test
     fun noCase() = runTest {
         val trackRequest = createTrackRequest()
-        val context = MmContext(
+        val context = TrackContext(
             command = MmCommand.UPDATE,
             workMode = MmWorkMode.STUB,
             stubCase = MmStubs.BAD_ID,
-            trackRequest = trackRequest,
+            request = trackRequest,
         )
 
         processor.exec(context)
 
-        assertTrue(context.trackResponse.isEmpty())
+        assertTrue(context.response.isEmpty())
         with(context.errors.first()) {
             assertEquals("validation", this.code)
             assertEquals("stub", this.field)

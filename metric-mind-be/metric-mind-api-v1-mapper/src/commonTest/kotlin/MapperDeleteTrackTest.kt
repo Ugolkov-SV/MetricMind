@@ -1,7 +1,7 @@
 import io.ugolkov.api.v1.models.*
 import io.ugolkov.metric_mind.api.v1.mappers.fromTransport
 import io.ugolkov.metric_mind.api.v1.mappers.toTransport
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.TrackContext
 import io.ugolkov.metric_mind.common.model.*
 import io.ugolkov.metric_mind.stubs.MmTrackStub
 import kotlin.test.Test
@@ -19,30 +19,32 @@ class MapperDeleteTrackTest {
             track = track.id.toTransport(),
         )
 
-        val context = MmContext()
+        val context = TrackContext()
         context.fromTransport(request)
 
         assertEquals(MmStubs.SUCCESS, context.stubCase)
         assertEquals(MmWorkMode.STUB, context.workMode)
-        assertEquals(track.id, context.trackRequest.id)
+        assertEquals(track.id, context.request.id)
     }
 
     @Test
     fun toTransport() {
-        val context = MmContext(
-            requestId = MmRequestId("1234"),
-            command = MmCommand.DELETE,
-            trackRequest = MmTrackStub.get(),
-            trackResponse = mutableListOf(MmTrackStub.get()),
-            errors = mutableListOf(
+        val context = TrackContext().apply {
+            command = MmCommand.DELETE
+            state = MmState.RUNNING
+            requestId = MmRequestId("1234")
+
+            errors.add(
                 MmError(
                     code = "err",
                     field = "title",
                     message = "wrong title",
                 )
-            ),
-            state = MmState.RUNNING,
-        )
+            )
+
+            request = MmTrackStub.get()
+            response.add(MmTrackStub.get())
+        }
 
         val response = context.toTransport() as TrackDeleteRs
 

@@ -1,8 +1,8 @@
 package stub
 
 import io.ugolkov.metric_mind.biz.MmProcessor
-import io.ugolkov.metric_mind.common.MmContext
 import io.ugolkov.metric_mind.common.MmCorSettings
+import io.ugolkov.metric_mind.common.TrackRecordContext
 import io.ugolkov.metric_mind.common.model.*
 import io.ugolkov.metric_mind.stubs.MmTrackRecordStub
 import kotlinx.coroutines.test.runTest
@@ -15,11 +15,11 @@ class StubTrackRecordReadTest {
 
     @Test
     fun read() = runTest {
-        val context = MmContext(
+        val context = TrackRecordContext(
             command = MmCommand.READ,
             workMode = MmWorkMode.STUB,
             stubCase = MmStubs.SUCCESS,
-            trackRecordRequest = MmTrackRecord(
+            request = MmTrackRecord(
                 trackRecordId = MmTrackId(7L),
                 trackId = MmTrackId(3L),
             ),
@@ -27,7 +27,7 @@ class StubTrackRecordReadTest {
 
         processor.exec(context)
 
-        with(context.trackRecordResponse.first()) {
+        with(context.response.first()) {
             val expected = MmTrackRecordStub.get()
             assertEquals(7L, this.trackRecordId.asLong())
             assertEquals(3L, this.trackId.asLong())
@@ -38,11 +38,11 @@ class StubTrackRecordReadTest {
 
     @Test
     fun badId() = runTest {
-        val context = MmContext(
+        val context = TrackRecordContext(
             command = MmCommand.READ,
             workMode = MmWorkMode.STUB,
             stubCase = MmStubs.BAD_ID,
-            trackRecordRequest = MmTrackRecord(
+            request = MmTrackRecord(
                 trackRecordId = MmTrackId(0L),
                 trackId = MmTrackId(0L),
             ),
@@ -50,7 +50,7 @@ class StubTrackRecordReadTest {
 
         processor.exec(context)
 
-        assertTrue(context.trackResponse.isEmpty())
+        assertTrue(context.response.isEmpty())
         with(context.errors.first()) {
             assertEquals("validation-id", this.code)
             assertEquals("id", this.field)
@@ -61,16 +61,16 @@ class StubTrackRecordReadTest {
     @Test
     fun dbError() = runTest {
         val trackRecordRequest = createTrackRecordRequest()
-        val context = MmContext(
+        val context = TrackRecordContext(
             command = MmCommand.READ,
             workMode = MmWorkMode.STUB,
             stubCase = MmStubs.DB_ERROR,
-            trackRecordRequest = trackRecordRequest,
+            request = trackRecordRequest,
         )
 
         processor.exec(context)
 
-        assertTrue(context.trackResponse.isEmpty())
+        assertTrue(context.response.isEmpty())
         with(context.errors.first()) {
             assertEquals("internal-db", this.code)
             assertEquals("Internal error", this.message)
@@ -80,16 +80,16 @@ class StubTrackRecordReadTest {
     @Test
     fun noCase() = runTest {
         val trackRecordRequest = createTrackRecordRequest()
-        val context = MmContext(
+        val context = TrackRecordContext(
             command = MmCommand.READ,
             workMode = MmWorkMode.STUB,
             stubCase = MmStubs.BAD_VALUE,
-            trackRecordRequest = trackRecordRequest,
+            request = trackRecordRequest,
         )
 
         processor.exec(context)
 
-        assertTrue(context.trackResponse.isEmpty())
+        assertTrue(context.response.isEmpty())
         with(context.errors.first()) {
             assertEquals("validation", this.code)
             assertEquals("stub", this.field)

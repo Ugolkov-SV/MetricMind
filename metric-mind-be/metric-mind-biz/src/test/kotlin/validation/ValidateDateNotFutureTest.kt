@@ -1,7 +1,7 @@
 package validation
 
 import io.ugolkov.metric_mind.biz.validation.validateDateNotFuture
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.TrackContext
 import io.ugolkov.metric_mind.common.model.MmState
 import io.ugolkov.metric_mind.common.model.MmTrack
 import io.ugolkov.metric_mind.cor.rootChain
@@ -13,14 +13,17 @@ class ValidateDateNotFutureTest {
     @Test
     fun correct() =
         runTest {
-            val ctx = MmContext(state = MmState.RUNNING, trackValidating = MmTrack(createDate = 2026))
-            rootChain {
+            val ctx = TrackContext(state = MmState.RUNNING)
+                .apply { validating = MmTrack(createDate = 2026) }
+
+            rootChain<TrackContext> {
                 validateDateNotFuture(
                     title = "Title",
-                    field = "title",
-                    selector = { trackValidating.createDate }
+                    field = "createDate",
+                    selector = { validating.createDate }
                 )
             }.exec(ctx)
+
             assertEquals(MmState.RUNNING, ctx.state)
             assertEquals(0, ctx.errors.size)
         }
@@ -28,14 +31,17 @@ class ValidateDateNotFutureTest {
     @Test
     fun future() =
         runTest {
-            val ctx = MmContext(state = MmState.RUNNING, trackValidating = MmTrack(createDate = Long.MAX_VALUE))
-            rootChain {
+            val ctx = TrackContext(state = MmState.RUNNING)
+                .apply { validating = MmTrack(createDate = Long.MAX_VALUE) }
+
+            rootChain<TrackContext> {
                 validateDateNotFuture(
                     title = "Title",
-                    field = "title",
-                    selector = { trackValidating.createDate }
+                    field = "createDate",
+                    selector = { validating.createDate }
                 )
             }.exec(ctx)
+
             assertEquals(MmState.FAILING, ctx.state)
             assertEquals(1, ctx.errors.size)
         }

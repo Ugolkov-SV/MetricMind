@@ -2,15 +2,15 @@ package io.ugolkov.metric_mind.biz.validation
 
 import io.ugolkov.metric_mind.biz.helper.errorValidation
 import io.ugolkov.metric_mind.biz.helper.fail
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.BaseContext
 import io.ugolkov.metric_mind.common.model.MmTrackId
 import io.ugolkov.metric_mind.cor.IChainDsl
 import io.ugolkov.metric_mind.cor.worker
 
-internal fun IChainDsl<MmContext>.validateIdMoreZero(
+internal fun <T : BaseContext> IChainDsl<T>.validateIdMoreZero(
     title: String,
     field: String,
-    selector: MmContext.() -> MmTrackId,
+    selector: T.() -> MmTrackId,
 ) =
     worker {
         this.title = title

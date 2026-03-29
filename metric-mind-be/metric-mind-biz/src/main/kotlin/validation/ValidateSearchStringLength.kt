@@ -2,13 +2,13 @@ package io.ugolkov.metric_mind.biz.validation
 
 import io.ugolkov.metric_mind.biz.helper.errorValidation
 import io.ugolkov.metric_mind.biz.helper.fail
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.TrackFilterContext
 import io.ugolkov.metric_mind.common.model.MmState
 import io.ugolkov.metric_mind.cor.IChainDsl
 import io.ugolkov.metric_mind.cor.chain
 import io.ugolkov.metric_mind.cor.worker
 
-internal fun IChainDsl<MmContext>.validateSearchStringLength(title: String) =
+internal fun IChainDsl<TrackFilterContext>.validateSearchStringLength(title: String) =
     chain {
         this.title = title
         this.description = """
@@ -19,12 +19,12 @@ internal fun IChainDsl<MmContext>.validateSearchStringLength(title: String) =
     """.trimIndent()
         on { state == MmState.RUNNING }
         worker("Обрезка пустых символов") {
-            trackFilterValidating.searchString = trackFilterValidating.searchString.trim()
+            validating.searchString = validating.searchString.trim()
         }
         worker {
             this.title = "Проверка кейса длины на 0-2 символа"
             this.description = this.title
-            on { state == MmState.RUNNING && trackFilterValidating.searchString.length in (1..2) }
+            on { state == MmState.RUNNING && validating.searchString.length in (1..2) }
             handle {
                 fail(
                     errorValidation(
@@ -38,7 +38,7 @@ internal fun IChainDsl<MmContext>.validateSearchStringLength(title: String) =
         worker {
             this.title = "Проверка кейса длины на более 100 символов"
             this.description = this.title
-            on { state == MmState.RUNNING && trackFilterValidating.searchString.length > 100 }
+            on { state == MmState.RUNNING && validating.searchString.length > 100 }
             handle {
                 fail(
                     errorValidation(

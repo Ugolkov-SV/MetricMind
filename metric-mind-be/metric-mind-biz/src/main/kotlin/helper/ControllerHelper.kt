@@ -1,22 +1,23 @@
 package io.ugolkov.metric_mind.biz.helper
 
 import io.ugolkov.metric_mind.biz.logger.toLog
+import io.ugolkov.metric_mind.common.BaseContext
 import io.ugolkov.metric_mind.common.IMmAppSettings
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.createContext
 import io.ugolkov.metric_mind.common.model.MmState
 import kotlin.reflect.KClass
 import kotlin.time.Clock
 
-suspend inline fun <T> IMmAppSettings.controllerHelper(
-    crossinline getRequest: suspend MmContext.() -> Unit,
-    crossinline toResponse: suspend MmContext.() -> T,
+suspend inline fun <reified C : BaseContext, T> IMmAppSettings.controllerHelper(
+    crossinline getRequest: suspend C.() -> Unit,
+    crossinline toResponse: suspend C.() -> T,
     clazz: KClass<*>,
     logId: String,
 ): T {
     val logger = corSettings.loggerProvider.logger(clazz)
-    val ctx = MmContext(
-        timeStart = Clock.System.now(),
-    )
+    val ctx = createContext<C>()
+        .apply { timeStart = Clock.System.now() }
+
     return try {
         ctx.getRequest()
         logger.info(

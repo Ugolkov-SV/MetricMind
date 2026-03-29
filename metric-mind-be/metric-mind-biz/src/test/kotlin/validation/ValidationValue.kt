@@ -1,7 +1,7 @@
 package validation
 
 import io.ugolkov.metric_mind.biz.MmProcessor
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.TrackRecordContext
 import io.ugolkov.metric_mind.common.model.*
 import kotlinx.coroutines.test.runTest
 import kotlin.test.assertContains
@@ -10,11 +10,11 @@ import kotlin.test.assertNotEquals
 
 fun validationValueCorrect(command: MmCommand, processor: MmProcessor) =
     runTest {
-        val ctx = MmContext(
+        val ctx = TrackRecordContext(
             command = command,
             state = MmState.NONE,
             workMode = MmWorkMode.TEST,
-            trackRecordRequest = MmTrackRecord(
+            request = MmTrackRecord(
                 trackRecordId = MmTrackId(7L),
                 trackId = MmTrackId(7L),
                 value = 10.0,
@@ -29,11 +29,11 @@ fun validationValueCorrect(command: MmCommand, processor: MmProcessor) =
 
 fun validationValue(command: MmCommand, processor: MmProcessor) =
     runTest {
-        val ctx = MmContext(
+        val ctx = TrackRecordContext(
             command = command,
             state = MmState.NONE,
             workMode = MmWorkMode.TEST,
-            trackRecordRequest = MmTrackRecord(
+            request = MmTrackRecord(
                 trackRecordId = MmTrackId(7L),
                 trackId = MmTrackId(7L),
                 value = Double.NaN,

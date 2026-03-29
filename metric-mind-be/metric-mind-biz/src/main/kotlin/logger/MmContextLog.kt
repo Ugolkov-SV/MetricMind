@@ -1,6 +1,9 @@
 package io.ugolkov.metric_mind.biz.logger
 
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.BaseContext
+import io.ugolkov.metric_mind.common.TrackContext
+import io.ugolkov.metric_mind.common.TrackFilterContext
+import io.ugolkov.metric_mind.common.TrackRecordContext
 import io.ugolkov.metric_mind.common.model.*
 import io.ugolkov.metric_mind.logger.model.*
 import kotlinx.datetime.format
@@ -8,32 +11,51 @@ import kotlinx.datetime.format.DateTimeComponents.Formats.RFC_1123
 import kotlin.time.Clock
 import kotlin.time.Instant
 
-fun MmContext.toLog(logId: String) =
+fun <T : BaseContext> T.toLog(logId: String) =
     CommonLogModel(
         messageTime = Clock.System.now().toString(),
         logId = logId,
         source = "metric-mind",
-        track = toMmLog(),
-        trackRecord = toMmLog(),
+        model = this.toMmLog(),
         errors = errors.map { it.toLog() },
     )
 
-private fun MmContext.toMmLog(): MmLogModel? {
-    val trackNone = MmTrack()
-    val trackRecordNone = MmTrackRecord()
-    return MmLogModel(
+private fun <T : BaseContext> T.toMmLog(): MmLogModel<*, *>? =
+    when (this) {
+        is TrackContext -> toMmLog()
+        is TrackRecordContext -> toMmLog()
+        is TrackFilterContext -> toMmLog()
+    }
+
+private fun TrackContext.toMmLog(): MmTrackLogModel? =
+    MmTrackLogModel(
         requestId = requestId.takeIf { it != MmRequestId.NONE }?.asString(),
-        requestTrack = trackRequest.takeIf { it != trackNone }?.toLog(),
-        responseTrack = trackResponse.takeIf { it.isNotEmpty() }
-            ?.filter { it != trackNone }
+        request = request.takeIf { it != MmTrack.NONE }?.toLog(),
+        response = response.takeIf { it.isNotEmpty() }
+            ?.filter { it != MmTrack.NONE }
             ?.map { it.toLog() },
-        requestTrackRecord = trackRecordRequest.takeIf { it != trackRecordNone }?.toLog(),
-        responseTrackRecord = trackRecordResponse.takeIf { it.isNotEmpty() }
-            ?.filter { it != trackNone }
+    )
+        .takeIf { it != MmTrackLogModel() }
+
+private fun TrackRecordContext.toMmLog(): MmTrackRecordLogModel? =
+    MmTrackRecordLogModel(
+        requestId = requestId.takeIf { it != MmRequestId.NONE }?.asString(),
+        request = request.takeIf { it != MmTrackRecord.NONE }?.toLog(),
+        response = response.takeIf { it.isNotEmpty() }
+            ?.filter { it != MmTrackRecord.NONE }
             ?.map { it.toLog() },
-        requestFilter = trackFilterRequest.takeIf { it != MmTrackFilter() }?.toLog(),
-    ).takeIf { it != MmLogModel() }
-}
+    )
+        .takeIf { it != MmTrackRecordLogModel() }
+
+private fun TrackFilterContext.toMmLog(): MmTrackFilterLogModel? =
+    MmTrackFilterLogModel(
+        requestId = requestId.takeIf { it != MmRequestId.NONE }?.asString(),
+        request = request.takeIf { it != MmTrackFilter.NONE }?.toLog(),
+        response = response.takeIf { it.isNotEmpty() }
+            ?.filter { it != MmTrack.NONE }
+            ?.map { it.toLog() },
+    )
+        .takeIf { it != MmTrackRecordLogModel() }
 
 private fun MmTrack.toLog(): MmTrackLog =
     MmTrackLog(

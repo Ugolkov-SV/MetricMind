@@ -6,7 +6,7 @@ import io.ugolkov.metric_mind.api.v1.mappers.toTransportTrackRecordDelete
 import io.ugolkov.metric_mind.api.v1.mappers.toTransportTrackRecordRead
 import io.ugolkov.metric_mind.api.v1.mappers.toTransportTrackRecordUpdate
 import io.ugolkov.metric_mind.common.IProcessor
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.TrackRecordContext
 import io.ugolkov.metric_mind.spring.config.MetricMindConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
@@ -39,7 +39,7 @@ class TrackRecordControllerV1Test {
                     date = 0,
                 )
             ),
-            responseObj = MmContext().toTransportTrackRecordCreate()
+            responseObj = TrackRecordContext().toTransportTrackRecordCreate()
         )
 
     @Test
@@ -47,7 +47,7 @@ class TrackRecordControllerV1Test {
         testStubTrackRecord(
             url = "$TRACK_RECORD_PATH/read",
             requestObj = TrackRecordReadRq(TrackId(id = 0)),
-            responseObj = MmContext().toTransportTrackRecordRead()
+            responseObj = TrackRecordContext().toTransportTrackRecordRead()
         )
 
     @Test
@@ -62,7 +62,7 @@ class TrackRecordControllerV1Test {
                     date = 0,
                 )
             ),
-            responseObj = MmContext().toTransportTrackRecordUpdate()
+            responseObj = TrackRecordContext().toTransportTrackRecordUpdate()
         )
 
     @Test
@@ -71,11 +71,11 @@ class TrackRecordControllerV1Test {
             url = "$TRACK_RECORD_PATH/delete",
             requestObj = TrackRecordDeleteRq(
                 TrackRecordDeleteRqAllOfTrackRecord(
-                    trackId = 1L,
+                    trackRecordId = 1L,
                     date = 0L,
                 )
             ),
-            responseObj = MmContext().toTransportTrackRecordDelete()
+            responseObj = TrackRecordContext().toTransportTrackRecordDelete()
         )
 
     private inline fun <reified Rq : IRequest, reified Rs : IResponse> testStubTrackRecord(

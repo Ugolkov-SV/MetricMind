@@ -1,7 +1,8 @@
 package validation
 
 import io.ugolkov.metric_mind.biz.MmProcessor
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.TrackContext
+import io.ugolkov.metric_mind.common.TrackRecordContext
 import io.ugolkov.metric_mind.common.model.*
 import kotlinx.coroutines.test.runTest
 import kotlin.test.assertContains
@@ -10,11 +11,11 @@ import kotlin.test.assertNotEquals
 
 fun validationTrackDateCorrect(command: MmCommand, processor: MmProcessor) =
     runTest {
-        val ctx = MmContext(
+        val ctx = TrackContext(
             command = command,
             state = MmState.NONE,
             workMode = MmWorkMode.TEST,
-            trackRequest = MmTrack(
+            request = MmTrack(
                 id = MmTrackId(7L),
                 title = "abc",
                 type = MmTrackType.NUMBER,
@@ -27,16 +28,16 @@ fun validationTrackDateCorrect(command: MmCommand, processor: MmProcessor) =
 
         assertEquals(0, ctx.errors.size)
         assertNotEquals(MmState.FAILING, ctx.state)
-        assertEquals("abc", ctx.trackValidated.title)
+        assertEquals(2026, ctx.validated.createDate)
     }
 
 fun validationTrackDateNotFuture(command: MmCommand, processor: MmProcessor) =
     runTest {
-        val ctx = MmContext(
+        val ctx = TrackContext(
             command = command,
             state = MmState.NONE,
             workMode = MmWorkMode.TEST,
-            trackRequest = MmTrack(
+            request = MmTrack(
                 id = MmTrackId(7L),
                 title = "abc",
                 type = MmTrackType.NUMBER,
@@ -56,11 +57,11 @@ fun validationTrackDateNotFuture(command: MmCommand, processor: MmProcessor) =
 
 fun validationTrackRecordDateCorrect(command: MmCommand, processor: MmProcessor) =
     runTest {
-        val ctx = MmContext(
+        val ctx = TrackRecordContext(
             command = command,
             state = MmState.NONE,
             workMode = MmWorkMode.TEST,
-            trackRecordRequest = MmTrackRecord(
+            request = MmTrackRecord(
                 trackRecordId = MmTrackId(7L),
                 trackId = MmTrackId(7L),
                 value = 10.0,
@@ -71,15 +72,16 @@ fun validationTrackRecordDateCorrect(command: MmCommand, processor: MmProcessor)
 
         assertEquals(0, ctx.errors.size)
         assertNotEquals(MmState.FAILING, ctx.state)
+        assertEquals(2026, ctx.validated.date)
     }
 
 fun validationTrackRecordDateNotFuture(command: MmCommand, processor: MmProcessor) =
     runTest {
-        val ctx = MmContext(
+        val ctx = TrackRecordContext(
             command = command,
             state = MmState.NONE,
             workMode = MmWorkMode.TEST,
-            trackRecordRequest = MmTrackRecord(
+            request = MmTrackRecord(
                 trackRecordId = MmTrackId(7L),
                 trackId = MmTrackId(7L),
                 value = 10.0,
