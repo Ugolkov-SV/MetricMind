@@ -1,81 +1,86 @@
 package io.ugolkov.metric_mind.api.v1.mappers
 
 import io.ugolkov.api.v1.models.*
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.BaseContext
+import io.ugolkov.metric_mind.common.TrackContext
+import io.ugolkov.metric_mind.common.TrackFilterContext
+import io.ugolkov.metric_mind.common.TrackRecordContext
 import io.ugolkov.metric_mind.common.exception.NotValidCommand
 import io.ugolkov.metric_mind.common.model.*
 
-fun MmContext.toTransport(): IResponse =
+fun BaseContext.toTransport(): IResponse =
     when (val cmd = command) {
-        MmCommand.CREATE if !trackRequest.isEmpty() -> toTransportTrackCreate()
-        MmCommand.READ if !trackRequest.isEmpty() -> toTransportTrackRead()
-        MmCommand.UPDATE if !trackRequest.isEmpty() -> toTransportTrackUpdate()
-        MmCommand.DELETE if !trackRequest.isEmpty() -> toTransportTrackDelete()
-        MmCommand.SEARCH if !trackFilterRequest.isEmpty() -> toTransportTrackSearch()
-        MmCommand.CREATE if !trackRecordRequest.isEmpty() -> toTransportTrackRecordCreate()
-        MmCommand.READ if !trackRecordRequest.isEmpty() -> toTransportTrackRecordRead()
-        MmCommand.UPDATE if !trackRecordRequest.isEmpty() -> toTransportTrackRecordUpdate()
-        MmCommand.DELETE if !trackRecordRequest.isEmpty() -> toTransportTrackRecordDelete()
+        MmCommand.CREATE if this is TrackContext -> toTransportTrackCreate()
+        MmCommand.READ if this is TrackContext -> toTransportTrackRead()
+        MmCommand.UPDATE if this is TrackContext -> toTransportTrackUpdate()
+        MmCommand.DELETE if this is TrackContext -> toTransportTrackDelete()
+        MmCommand.SEARCH if this is TrackFilterContext -> toTransportTrackSearch()
+        MmCommand.CREATE if this is TrackRecordContext -> toTransportTrackRecordCreate()
+        MmCommand.READ if this is TrackRecordContext -> toTransportTrackRecordRead()
+        MmCommand.UPDATE if this is TrackRecordContext -> toTransportTrackRecordUpdate()
+        MmCommand.DELETE if this is TrackRecordContext -> toTransportTrackRecordDelete()
         else -> throw NotValidCommand(cmd)
     }
 
-fun MmContext.toTransportTrackCreate(): TrackCreateRs =
+fun TrackContext.toTransportTrackCreate(): TrackCreateRs =
     TrackCreateRs(
         result = state.toResult(),
         errors = errors.toTransportErrors(),
-        track = trackResponse.firstOrNull()?.id?.toTransport(),
+        track = response.firstOrNull()?.id?.toTransport(),
     )
 
-fun MmContext.toTransportTrackRead(): TrackReadRs =
+fun TrackContext.toTransportTrackRead(): TrackReadRs =
     TrackReadRs(
         result = state.toResult(),
         errors = errors.toTransportErrors(),
-        track = trackResponse.firstOrNull()?.toTransport()
+        track = response.firstOrNull()?.toTransport()
     )
 
-fun MmContext.toTransportTrackUpdate(): TrackUpdateRs =
+fun TrackContext.toTransportTrackUpdate(): TrackUpdateRs =
     TrackUpdateRs(
         result = state.toResult(),
         errors = errors.toTransportErrors(),
     )
 
-fun MmContext.toTransportTrackDelete(): TrackDeleteRs =
+fun TrackContext.toTransportTrackDelete(): TrackDeleteRs =
     TrackDeleteRs(
         result = state.toResult(),
         errors = errors.toTransportErrors(),
-        track = trackResponse.firstOrNull()?.id?.toTransport(),
+        track = response.firstOrNull()?.id?.toTransport(),
     )
 
-fun MmContext.toTransportTrackSearch(): TrackSearchRs =
+fun TrackFilterContext.toTransportTrackSearch(): TrackSearchRs =
     TrackSearchRs(
         result = state.toResult(),
         errors = errors.toTransportErrors(),
-        tracks = trackResponse.toTransportTrack(),
+        tracks = response.toTransportTrack(),
     )
 
-fun MmContext.toTransportTrackRecordCreate(): TrackRecordCreateRs =
+fun TrackRecordContext.toTransportTrackRecordCreate(): TrackRecordCreateRs =
     TrackRecordCreateRs(
         result = state.toResult(),
         errors = errors.toTransportErrors(),
+        trackRecord = response.firstOrNull()?.trackRecordId?.toTransport(),
     )
 
-fun MmContext.toTransportTrackRecordRead(): TrackRecordReadRs =
+fun TrackRecordContext.toTransportTrackRecordRead(): TrackRecordReadRs =
     TrackRecordReadRs(
         result = state.toResult(),
         errors = errors.toTransportErrors(),
-        trackRecords = trackRecordResponse.toTransportTrackRecord(),
+        trackRecords = response.toTransportTrackRecord(),
     )
 
-fun MmContext.toTransportTrackRecordUpdate(): TrackRecordUpdateRs =
+fun TrackRecordContext.toTransportTrackRecordUpdate(): TrackRecordUpdateRs =
     TrackRecordUpdateRs(
         result = state.toResult(),
         errors = errors.toTransportErrors(),
     )
 
-fun MmContext.toTransportTrackRecordDelete(): TrackRecordDeleteRs =
+fun TrackRecordContext.toTransportTrackRecordDelete(): TrackRecordDeleteRs =
     TrackRecordDeleteRs(
         result = state.toResult(),
         errors = errors.toTransportErrors(),
+        trackRecord = response.firstOrNull()?.trackRecordId?.toTransport(),
     )
 
 private fun List<MmTrack>.toTransportTrack(): List<TrackReadWithOwner>? =

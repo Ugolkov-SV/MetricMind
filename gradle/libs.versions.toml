@@ -37,6 +37,9 @@ kafka-client = { module = "org.apache.kafka:kafka-clients", version = "4.2.0" }
 # Testing
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version = "6.2.3" }
 
+# Local
+cor = { module = "io.ugolkov:metric-mind-lib-cor" }
+
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

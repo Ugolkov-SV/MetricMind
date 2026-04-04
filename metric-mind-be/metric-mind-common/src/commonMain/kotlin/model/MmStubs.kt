@@ -8,5 +8,6 @@ enum class MmStubs {
     BAD_TITLE,
     BAD_VISIBILITY,
     BAD_SEARCH_STRING,
+    BAD_VALUE,
     DB_ERROR,
 }

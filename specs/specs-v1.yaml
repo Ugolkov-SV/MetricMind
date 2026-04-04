@@ -530,8 +530,8 @@ components:
         - $ref: '#/components/schemas/IResponse'
         - type: object
           properties:
-            trackRecordId:
-              $ref: '#/components/schemas/Id'
+            trackRecord:
+              $ref: '#/components/schemas/TrackId'
 
     TrackRecordReadRq:
       allOf:
@@ -570,8 +570,8 @@ components:
         - $ref: '#/components/schemas/IResponse'
         - type: object
           properties:
-            trackRecordId:
-              $ref: '#/components/schemas/Id'
+            trackRecord:
+              $ref: '#/components/schemas/TrackId'
 
     TrackRecordDeleteRq:
       allOf:
@@ -584,10 +584,10 @@ components:
             trackRecord:
               type: object
               required:
-                - trackId
+                - trackRecordId
                 - date
               properties:
-                trackId:
+                trackRecordId:
                   $ref: '#/components/schemas/Id'
                 date:
                   $ref: '#/components/schemas/Date'
@@ -598,8 +598,8 @@ components:
         - $ref: '#/components/schemas/IResponse'
         - type: object
           properties:
-            trackRecordId:
-              $ref: '#/components/schemas/Id'
+            trackRecord:
+              $ref: '#/components/schemas/TrackId'
 
     # STUBS
     RequestDebug:
@@ -632,4 +632,5 @@ components:
         - badTitle
         - badVisibility
         - badSearchString
+        - badValue
         - dbError

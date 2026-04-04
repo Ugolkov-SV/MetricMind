@@ -16,3 +16,14 @@ ext {
     val specDir = layout.projectDirectory.dir("../specs")
     set("spec-v1", specDir.file("specs-v1.yaml").toString())
 }
+
+tasks.register("allProjectTest", Test::class) {
+    group = "verification"
+
+    subprojects.flatMap { it.tasks }
+        .filter { it.group == "verification" }
+        .filter { it.name.endsWith(suffix = "test", ignoreCase = true) }
+        .forEach { task ->
+            dependsOn(task)
+        }
+}

@@ -4,6 +4,7 @@ import io.ugolkov.api.v1.models.*
 import io.ugolkov.metric_mind.api.v1.mappers.fromTransport
 import io.ugolkov.metric_mind.api.v1.mappers.toTransport
 import io.ugolkov.metric_mind.biz.helper.controllerHelper
+import io.ugolkov.metric_mind.common.TrackContext
 import io.ugolkov.metric_mind.spring.config.MmAppSettings
 import org.springframework.web.bind.annotation.*
 import kotlin.reflect.KClass
@@ -28,10 +29,6 @@ class TrackControllerV1(private val appSettings: MmAppSettings) {
     suspend fun delete(@RequestBody request: TrackDeleteRq): TrackDeleteRs =
         process(appSettings, request = request, this::class, "delete")
 
-    @PostMapping("search")
-    suspend fun search(@RequestBody request: TrackSearchRq): TrackSearchRs =
-        process(appSettings, request = request, this::class, "search")
-
     companion object {
         suspend inline fun <reified Q : IRequest, reified R : IResponse> process(
             appSettings: MmAppSettings,
@@ -39,7 +36,7 @@ class TrackControllerV1(private val appSettings: MmAppSettings) {
             clazz: KClass<*>,
             logId: String,
         ): R =
-            appSettings.controllerHelper(
+            appSettings.controllerHelper<TrackContext, R>(
                 getRequest = { fromTransport(request) },
                 toResponse = { toTransport() as R },
                 clazz = clazz,

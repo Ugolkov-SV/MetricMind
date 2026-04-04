@@ -9,8 +9,8 @@ data class MmTrack(
     var visibility: MmVisibility = MmVisibility.NONE,
     var owner: MmUserId = MmUserId.NONE,
 ) {
-    fun isEmpty(): Boolean =
-        this == NONE
+    fun isNotNone(): Boolean =
+        this !== NONE
 
     companion object {
         val NONE = MmTrack()

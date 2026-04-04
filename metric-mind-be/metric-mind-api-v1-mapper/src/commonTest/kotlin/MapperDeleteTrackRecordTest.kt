@@ -1,7 +1,7 @@
 import io.ugolkov.api.v1.models.*
 import io.ugolkov.metric_mind.api.v1.mappers.fromTransport
 import io.ugolkov.metric_mind.api.v1.mappers.toTransport
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.TrackRecordContext
 import io.ugolkov.metric_mind.common.model.*
 import io.ugolkov.metric_mind.stubs.MmTrackRecordStub
 import kotlin.test.Test
@@ -19,30 +19,33 @@ class MapperDeleteTrackRecordTest {
             trackRecord = trackRecord.toTransport(),
         )
 
-        val context = MmContext()
+        val context = TrackRecordContext()
         context.fromTransport(request)
 
         assertEquals(MmStubs.SUCCESS, context.stubCase)
         assertEquals(MmWorkMode.STUB, context.workMode)
-        assertEquals(trackRecord.trackId, context.trackRecordRequest.trackId)
+        assertEquals(trackRecord.trackRecordId, context.request.trackRecordId)
     }
 
     @Test
     fun toTransport() {
-        val context = MmContext(
-            requestId = MmRequestId("1234"),
-            command = MmCommand.DELETE,
-            trackRecordRequest = MmTrackRecordStub.get(),
-            trackRecordResponse = mutableListOf(MmTrackRecordStub.get()),
-            errors = mutableListOf(
-                MmError(
-                    code = "err",
-                    field = "title",
-                    message = "wrong title",
+        val context = TrackRecordContext()
+            .apply {
+                command = MmCommand.DELETE
+                state = MmState.RUNNING
+                requestId = MmRequestId("1234")
+
+                errors.add(
+                    MmError(
+                        code = "err",
+                        field = "title",
+                        message = "wrong title",
+                    )
                 )
-            ),
-            state = MmState.RUNNING,
-        )
+
+                request = MmTrackRecordStub.get()
+                response.add(MmTrackRecordStub.get())
+            }
 
         val response = context.toTransport() as TrackRecordDeleteRs
 
@@ -54,7 +57,7 @@ class MapperDeleteTrackRecordTest {
 
     private fun MmTrackRecord.toTransport(): TrackRecordDeleteRqAllOfTrackRecord =
         TrackRecordDeleteRqAllOfTrackRecord(
-            trackId = this.trackId.asLong(),
+            trackRecordId = this.trackRecordId.asLong(),
             date = this.date,
         )
 }

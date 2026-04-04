@@ -1,7 +1,7 @@
 import io.ugolkov.api.v1.models.*
 import io.ugolkov.metric_mind.api.v1.mappers.fromTransport
 import io.ugolkov.metric_mind.api.v1.mappers.toTransport
-import io.ugolkov.metric_mind.common.MmContext
+import io.ugolkov.metric_mind.common.TrackContext
 import io.ugolkov.metric_mind.common.model.*
 import io.ugolkov.metric_mind.stubs.MmTrackStub
 import kotlin.test.Test
@@ -17,35 +17,36 @@ class MapperUpdateTrackTest {
             ),
             track = MmTrackStub.get().toTransport(),
         )
-        val expected = MmTrackStub
-            .prepareResult {
-                owner = MmUserId.NONE
-                type = MmTrackType.NONE
-            }
 
-        val context = MmContext()
+        val context = TrackContext()
         context.fromTransport(request)
 
+        val expected = MmTrackStub.prepareResult {
+            owner = MmUserId.NONE
+            type = MmTrackType.NONE
+        }
         assertEquals(MmStubs.SUCCESS, context.stubCase)
         assertEquals(MmWorkMode.STUB, context.workMode)
-        assertEquals(expected, context.trackRequest)
+        assertEquals(expected, context.request)
     }
 
     @Test
     fun toTransport() {
-        val context = MmContext(
-            requestId = MmRequestId("1234"),
-            command = MmCommand.UPDATE,
-            trackRequest = MmTrackStub.get(),
-            errors = mutableListOf(
+        val context = TrackContext().apply {
+            command = MmCommand.UPDATE
+            state = MmState.RUNNING
+            requestId = MmRequestId("1234")
+
+            errors.add(
                 MmError(
                     code = "err",
                     field = "title",
                     message = "wrong title",
                 )
-            ),
-            state = MmState.RUNNING,
-        )
+            )
+
+            request = MmTrackStub.get()
+        }
 
         val response = context.toTransport() as TrackUpdateRs
 

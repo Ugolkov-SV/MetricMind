@@ -4,5 +4,7 @@ plugins {
 
 rootProject.name = "MetricMind"
 
-includeBuild("lessons")
+//includeBuild("lessons")
+
 includeBuild("metric-mind-be")
+includeBuild("metric-mind-libs")
